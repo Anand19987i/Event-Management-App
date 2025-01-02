@@ -1,0 +1,345 @@
+import Navbar from '../components/Navbar';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { EVENT_API_END_POINT } from '../utils/constant';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { setLoading } from '../redux/eventSlice';
+import { Loader2 } from 'lucide-react';
+import MenuBar from './MenuBar';
+
+const EditEventDetail = () => {
+  const Cities = [
+    "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Ahmedabad", "Chennai",
+    "Kolkata", "Pune", "Jaipur", "Surat", "Lucknow", "Kanpur", "Nagpur",
+    "Indore", "Thane", "Bhopal", "Visakhapatnam", "Vadodara", "Chandigarh",
+    "Ranchi", "Guwahati", "Mysore", "Coimbatore", "Agra", "Varanasi",
+    "Patna", "Raipur", "Nashik", "Jodhpur", "Madurai", "Meerut", "Rajkot",
+    "Amritsar", "Allahabad", "Vijayawada", "Gwalior", "Noida", "Faridabad",
+    "Ludhiana", "Ghaziabad", "Jabalpur", "Aurangabad", "Dehradun", "Shillong",
+    "Kochi", "Trivandrum", "Pondicherry"
+  ];
+
+  const eventTypes = [
+    "Concert",
+    "Dance",
+    "Theater",
+    "Workshop",
+    "Seminar",
+    "Exhibition",
+    "Stand-up Comedy",
+    "Music Festival",
+    "Sports Event",
+    "Webinar",
+    "Corporate Meetup",
+    "Charity Event",
+    "Product Launch",
+    "Book Signing",
+    "Art Showcase",
+    "Gaming Tournament",
+  ];
+
+  const { user } = useSelector((store) => store.auth);
+  const { events, eventId } = useSelector((store) => store.event);
+  const { loading, eventDetail } = useSelector((store) => store.event);
+  const [thumbnailPreview , setThumbnailPreview] = useState(null);
+  const [posterPreview, setPosterPreview] = useState(null);
+
+  const [formData, setFormData] = useState({
+    eventTitle: eventDetail.eventTitle || '',
+    eventType: eventDetail.eventType ||  '',
+    eventArtist: eventDetail.eventArtist,
+    eventDescription: eventDetail.eventDescription ||'',
+    eventLocation: eventDetail.eventLocation || '',
+    ticketPrice: eventDetail.ticketPrice || '',
+    state: eventDetail.state || '',
+    eventDate: eventDetail.eventDate || '',
+    startTime: eventDetail.startTime || '',
+    startTimePeriod: eventDetail.startTimePeriod || '',
+    endTime: eventDetail.endTime || '',
+    endTimePeriod: eventDetail.endTimePeriod || '',
+    eventThumbnail: eventDetail.eventThumbnail || '',
+    eventPoster: eventDetail.eventPoster || '',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "startTime" || name === "endTime") {
+      const [hours, minutes] = value.split(':').map(Number);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const adjustedHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+      const formattedTime = `${String(adjustedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      setFormData({
+        ...formData,
+        [name]: formattedTime,
+        [`${name}Period`]: period,
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (files.length > 0) setFormData({ ...formData, [name]: files[0] });
+
+  };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      dispatch(setLoading(true));
+      const data = new FormData();
+      data.append("eventThumbnail", formData.eventThumbnail || thumbnailPreview);
+      data.append("eventPoster", formData.eventPoster || posterPreview); // Append poster file
+      data.append('eventTitle', formData.eventTitle);
+      data.append('eventType', formData.eventType);
+      data.append('eventArtist', formData.eventArtist);
+      data.append('eventDescription', formData.eventDescription);
+      data.append('eventLocation', formData.eventLocation);
+      data.append('eventDate', formData.eventDate);
+      data.append('ticketPrice', formData.ticketPrice);
+      data.append('state', formData.state);
+      data.append('startTime', formData.startTime);
+      data.append('endTime', formData.endTime);
+      data.append('startTimePeriod', formData.startTimePeriod);
+      data.append('endTimePeriod', formData.endTimePeriod);
+      const response = await axios.post(
+        `${EVENT_API_END_POINT}/edit/event/${eventId}`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        dispatch(setLoading(false));
+        navigate(`/details/v1/events/${eventDetail.eventTitle}/${eventId}`);
+      }
+      console.log('Event created:', response.data);
+    } catch (error) {
+      dispatch(setLoading(false));
+      console.error('Error creating event:', error);
+    }
+  };
+  useEffect(() => {
+    if (eventDetail.eventThumbnail) {
+      setThumbnailPreview(eventDetail.eventThumbnail);
+    }
+    if (eventDetail.eventPoster) {
+      setPosterPreview(eventDetail.eventPoster);
+    }
+  }, [eventDetail]);
+
+
+  return (
+    <div className="bg-gray-50 min-h-screen font-montserrat">
+      <Navbar />
+      <MenuBar/>
+      <div className=" mx-auto p-6">
+        <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">Host Your Event</h1>
+        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
+          {/* Grid Container */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Row 1 */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Event Thumbnail</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                name="eventThumbnail"
+                className="block w-full text-gray-700 px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+    
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Event Poster</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                name="eventPoster"
+                className="block w-full text-gray-700 px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Event Title</label>
+              <input
+                type="text"
+                name="eventTitle"
+                placeholder="Event Title"
+                value={formData.eventTitle}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            {/* Row 2 */}
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Event Type</label>
+              <select
+                name="eventType"
+                value={formData.eventType}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="" disabled>
+                  Select an Event Type
+                </option>
+                {eventTypes.map((type, index) => (
+                  <option key={index} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Event Artist</label>
+              <input
+                type="text"
+                name="eventArtist"
+                placeholder="Event Artist"
+                value={formData.eventArtist}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Description</label>
+              <textarea
+                name="eventDescription"
+                placeholder="Description"
+                value={formData.eventDescription}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Ticket Price</label>
+              <input
+                type="text"
+                name="ticketPrice"
+                placeholder="Ticket Price"
+                value={formData.ticketPrice}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            {/* Row 3 */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">City</label>
+              <select
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="" disabled>
+                  Select a City
+                </option>
+                {Cities.map((city, idx) => (
+                  <option key={idx} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Location</label>
+              <input
+                type="text"
+                name="eventLocation"
+                placeholder="Location"
+                value={formData.eventLocation}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Event Date</label>
+              <input
+                type="date"
+                name="eventDate"
+                value={formData.eventDate}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Start Time</label>
+              <div className="flex space-x-2">
+                <input
+                  type="time"
+                  name="startTime"
+                  value={formData.startTime}
+                  onChange={handleInputChange}
+                  className="flex-grow px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <select
+                  name="startTimePeriod"
+                  value={formData.startTimePeriod}
+                  onChange={handleInputChange}
+                  className="w-20 px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">End Time</label>
+              <div className="flex space-x-2">
+                <input
+                  type="time"
+                  name="endTime"
+                  value={formData.endTime}
+                  onChange={handleInputChange}
+                  className="flex-grow px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <select
+                  name="endTimePeriod"
+                  value={formData.endTimePeriod}
+                  onChange={handleInputChange}
+                  className="w-20 px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+          {loading ? (
+            <button
+              type="submit"
+              className="bg-purple-800 text-white py-3 px-6 rounded-2xl mx-auto my-5 flex items-center justify-center"
+            >
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please Wait
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className=" flex bg-purple-800 text-white px-6 py-3 rounded-2xl mx-auto my-5  "
+            >
+              Save Changes
+            </button>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditEventDetail;
