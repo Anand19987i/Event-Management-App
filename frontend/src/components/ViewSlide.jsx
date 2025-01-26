@@ -6,7 +6,7 @@ import { TbBrandBooking } from "react-icons/tb";
 import { MdEventAvailable } from "react-icons/md";
 import axios from 'axios';
 import { USER_API_END_POINT } from '../utils/constant';
-import { setToken, setUser } from '../redux/authSlice';
+import { setToken, setUser, setUserDetail } from '../redux/authSlice';
 import { TbSettingsAutomation } from "react-icons/tb";
 
 const ViewSlide = () => {
@@ -20,6 +20,7 @@ const ViewSlide = () => {
             if (response.data.success) {
                 console.log("Logout");
                 dispatch(setUser(null));
+                dispatch(setUserDetail(""));
                 dispatch(setToken(null));
                 navigate("/");
             }
@@ -56,23 +57,14 @@ const ViewSlide = () => {
                     </div>
                 </div>
             </Link>
-            <Link to={`/host/event/${user?._id}`}> <div className='border-b gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
-                <div className="flex justify-start items-center gap-3 ">
-                    <MdEventAvailable className='w-4 h-4' />
-                    <span className='text-lg'>Host Your Events</span>
-                </div>
-                <div>
-                    <p className='text-sm pl-7 text-gray-500'>Organize events and shows</p>
-                </div>
-            </div>
-            </Link>
-            <Link to={`/ai/generate`}> <div className='border-b gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
+            
+            <Link to={`/eventify/api/v1/ai-assistant/chatbot`}> <div className='border-b gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
                 <div className="flex justify-start items-center gap-3 ">
                     <TbSettingsAutomation className='w-4 h-4' />
-                    <span className='text-lg'>Automate Your Content</span>
+                    <span className='text-lg'>Customer Service</span>
                 </div>
                 <div>
-                    <p className='text-sm pl-7 text-gray-500'>Generate description through an AI</p>
+                    <p className='text-sm pl-7 text-gray-500'>Frequently Ask Questions with AI Assitant</p>
                 </div>
             </div>
             </Link>

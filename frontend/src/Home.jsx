@@ -1,35 +1,95 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from './components/Navbar'
-import Cities from './components/Cities'
-import Herosection from './components/Herosection'
-import ViewSlide from './components/ViewSlide'
-import SpecialEvent from './components/SpecialEvent'
-import Optionbar from './components/Optionbar'
-import ViewEvent from './Host/ViewEvent'
-import { useSelector } from 'react-redux'
-import RegisterPopup from './components/RegisterPopup'
+import React, { useEffect, useState } from 'react';
+import Navbar from './components/Navbar';
+import Herosection from './components/Herosection';
+import ViewEvent from './Host/ViewEvent';
+import RecommendationModel from './Host/Recommendation/RecommendationModel';
+import RegisterPopup from './components/RegisterPopup';
+import EventSuggestion from '../src/components/EventSuggetion/EventSuggestion';
+import axios from 'axios';
+import { USER_API_END_POINT } from './utils/constant';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateFirstTimeStatus } from './redux/authSlice';
 
 const Home = () => {
-  const { user } = useSelector(store => store.auth);
+  const { user, isFirstTime } = useSelector(store => store.auth);
   const [showPopup, setShowPopup] = useState(false);
-
+  const [showEventSuggestion, setShowEventSuggestion] = useState(false);
+  const dispatch = useDispatch();
+  // Show registration popup for unauthenticated users
   useEffect(() => {
     if (!user?._id) {
       const timer = setTimeout(() => {
-        setShowPopup(true);  
-      }, 10000)  
-      return (() => clearTimeout(timer));
+        setShowPopup(true);
+      }, 10000);
+      return () => clearTimeout(timer);
     }
   }, [user]);
+
+  // Show event suggestion for first-time users
+  // useEffect(() => {
+  //   if (user?.isFirstTime) {
+  //     setShowEventSuggestion(true);
+  //   }
+  // }, [user]);
+   console.log(user?._id);  
+
+
+  // Show event suggestion logic
+  useEffect(() => {
+    if (user?.isFirstTime) {
+      setShowEventSuggestion(true);
+    }
+  }, [user]);
+  const markAsNotFirstTime = async () => {
+    try {
+      // Ensure the user is authenticated before proceeding
+      if (!user?._id) {
+        console.error('User is not authenticated');
+        return;
+      }
+  
+      // Send the request with the user's credentials
+      const response = await axios.put(
+        `${USER_API_END_POINT}/mark-as-not-first-time`,
+        {},
+        {
+          withCredentials: true, // This ensures cookies are sent with the request
+        }
+      );
+  
+      // Check the response and dispatch action accordingly
+      if (response.status === 200) {
+        dispatch(updateFirstTimeStatus(false));  // Update the Redux state
+        setShowEventSuggestion(false);  // Close the event suggestion
+      }
+  
+    } catch (error) {
+      console.error('Error updating status:', error.response ? error.response.data : error.message);
+    }
+  };
+  
+  const handleCloseSuggestion = () => {
+    setShowEventSuggestion(false);
+    markAsNotFirstTime();
+  };
+
   return (
     <div className=''>
-      <Navbar/>
-      {/* <Optionbar/> */}
-      <Herosection/>
-     <ViewEvent/>
-     {showPopup && <RegisterPopup onClose={(() => setShowPopup(false))}/>}
-    </div>
-  )
-}
+      <Navbar />
+      <Herosection />
+      <ViewEvent />
+      <RecommendationModel />
 
-export default Home
+      {showPopup && <RegisterPopup onClose={() => setShowPopup(false)} />}
+      {showEventSuggestion && (
+        <EventSuggestion
+          close={handleCloseSuggestion}
+          // Force re-render when closing
+          key={Date.now()}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Home;

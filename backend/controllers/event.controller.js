@@ -7,19 +7,21 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { User } from '../models/user.model.js';
+import * as tf from '@tensorflow/tfjs';  // Use tfjs-node for Node.js environment
+import { UserEventInteraction } from '../models/recommendation.model.js';
 dotenv.config();
 
 export const createEvent = async (req, res) => {
   try {
-    const { eventTitle, eventType, eventArtist, eventDescription, eventLocation, ticketPrice, state, eventDate, startTime, startTimePeriod, endTime, endTimePeriod } = req.body;
-    const { userId } = req.params;
+    const { eventTitle, eventType, eventArtist, eventDescription, eventLocation, ticketPrice, state, eventDate, startTime, startTimePeriod, endTime, endTimePeriod, totalSeats } = req.body;
+    const { hostId } = req.params;
     const { eventThumbnail, eventPoster } = req.files;
     const eventThumbnailUri = getDataUri(eventThumbnail[0]);
     const cloudThumbnailResponse = await cloudinary.uploader.upload(eventThumbnailUri);
     const eventPosterUri = getDataUri(eventPoster[0]);
     const cloudPosterResponse = await cloudinary.uploader.upload(eventPosterUri);
     const newEvent = await Event.create({
-      userId: userId,
+      hostId: hostId,
       eventThumbnail: cloudThumbnailResponse.secure_url,
       eventTitle,
       eventType,
@@ -34,6 +36,7 @@ export const createEvent = async (req, res) => {
       startTimePeriod,
       endTime,
       endTimePeriod,
+      totalSeats,
     });
 
     return res.status(201).json({
@@ -52,7 +55,7 @@ export const createEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate("userId", "name")
+    const events = await Event.find().populate("hostId", "name")
       .select('eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation').sort({ createdAt: -1 });
 
     return res.status(200).json({ success: true, events });
@@ -70,7 +73,7 @@ export const getEventDetails = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid Event ID' });
     }
 
-    const eventDetail = await Event.findById(eventId).select("eventTitle eventDescription eventArtist eventThumbnail ticketPrice eventPoster state eventDate eventLocation eventType startTime endTime startTimePeriod endTimePeriod");
+    const eventDetail = await Event.findById(eventId).select("eventTitle eventDescription eventArtist eventThumbnail ticketPrice eventPoster state eventDate eventLocation eventType startTime endTime startTimePeriod endTimePeriod totalSeats");
 
     if (!eventDetail) {
       return res.status(404).json({ success: false, message: 'Event not found' });
@@ -86,8 +89,8 @@ export const getEventDetails = async (req, res) => {
 export const getUserEvents = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = id;
-    const userEvents = await Event.find({ userId }).select("eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation").sort({ createdAt: -1 });
+    const hostId = id;
+    const userEvents = await Event.find({ hostId }).select("eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation").sort({ createdAt: -1 });
     return res.status(201).json({ success: true, userEvents });
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -97,7 +100,7 @@ export const getUserEvents = async (req, res) => {
 export const editUserEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { eventTitle, eventArtist, eventDescription, eventType, eventDate, ticketPrice, eventLocation, state, endTime, startTime, startTimePeriod, endTimePeriod } = req.body;
+    const { eventTitle, eventArtist, eventDescription, eventType, eventDate, ticketPrice, eventLocation, state, endTime, startTime, startTimePeriod, endTimePeriod, totalSeats } = req.body;
     let { eventThumbnail, eventPoster } = req.files;
 
     // Check if eventThumbnail and eventPoster are provided
@@ -133,6 +136,7 @@ export const editUserEvent = async (req, res) => {
         endTimePeriod,
         startTime,
         startTimePeriod,
+        totalSeats,
       },
       { new: true }
     );
@@ -161,25 +165,35 @@ export const deleteEvent = async (req, res) => {
 }
 export const bookEvent = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.body; // userId should be a string.
     const { eventId } = req.params;
 
+    // Fetch the event by ID
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
 
+    // Check if the event is fully booked
     if (event.booked.length >= event.maxCapacity) {
       return res.status(400).json({ message: "Event is fully booked." });
     }
 
+    // Check if the user has already booked this event
     if (event.booked.includes(userId)) {
       return res.status(400).json({ message: "You have already booked this event." });
     }
+
+    // Add the userId to the event's booked array
     event.booked.push(userId);
     await event.save();
 
-    const user = await User.findById(userId);
+    // Fetch the user and add the eventId to their bookedEvents array
+    const user = await User.findById(userId); // Fetch user using userId directly.
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
     user.bookedEvents.push(eventId);
     await user.save();
 
@@ -189,6 +203,7 @@ export const bookEvent = async (req, res) => {
     return res.status(500).json({ message: "An error occurred while booking the event." });
   }
 };
+
 
 export const checkBookingStatus = async (req, res) => {
   try {
@@ -209,11 +224,18 @@ export const checkBookingStatus = async (req, res) => {
 export const fetchBookedEvents = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Check if user exists
     const user = await User.findById(userId).populate({
       path: "bookedEvents",
       select: "eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation",
     });
 
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    // If user exists, return booked events
     return res.status(200).json({
       success: true,
       message: "Fetched booked events successfully.",
@@ -224,7 +246,8 @@ export const fetchBookedEvents = async (req, res) => {
     console.error(error);
     return res.status(500).json({ success: false, message: "An error occurred while fetching booked events." });
   }
-}
+};
+
 
 export const AiIntegration = async (req, res) => {
   const { query } = req.body;
@@ -250,5 +273,77 @@ export const AiIntegration = async (req, res) => {
     });
   }
 };
+export const recommendation = async (req, res) => {
+  const { selectedTypes, deselectedTypes } = req.body;
+  const { userId } = req.params;
+
+  try {
+    if (selectedTypes && selectedTypes.length > 0) {
+      // Find events matching selected types
+      const selectedEvents = await Event.find({ eventType: { $in: selectedTypes } });
+      const selectedEventIds = selectedEvents.map(event => event._id);
+
+      console.log("IDs", selectedEventIds);
+      await UserEventInteraction.findOneAndUpdate(
+        { userId: userId },
+        {
+          $addToSet: {
+            eventIds: { $each: selectedEventIds },
+            selectedTypes: { $each: selectedTypes },
+          },
+        },
+        { new: true, upsert: true }
+      );
+    }
+
+    if (deselectedTypes && deselectedTypes.length > 0) {
+      // Find events matching deselected types
+      const deselectedEvents = await Event.find({ eventType: { $in: deselectedTypes } });
+      const deselectedEventIds = deselectedEvents.map(event => event._id);
+
+      // Remove events and types from UserEventInteraction
+      await UserEventInteraction.findOneAndUpdate(
+        { userId: userId },
+        {
+          $pull: {
+            eventIds: { $in: deselectedEventIds },
+            selectedTypes: { $in: deselectedTypes },
+          },
+        },
+        { new: true }
+      );
+    }
+
+    // Fetch and return the updated interaction with populated event details
+    const updatedInteraction = await UserEventInteraction.findOne({ userId: userId })
+      .populate('eventIds'); 
+
+    res.status(200).json({
+      events: updatedInteraction.eventIds, // Populated event details
+      selectedTypes: updatedInteraction.selectedTypes,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+export const getRecommendEventDetails = async (req, res) => {
+  const { hostId } = req.params;
+
+  try {
+    const userInteraction = await UserEventInteraction.findOne({ hostId: hostId }).populate('eventIds');
+
+    if (!userInteraction) {
+      return res.status(404).json({ message: 'No events found for this user' });
+    }
+    console.log(userInteraction.eventIds.eventTitle);
+    res.status(200).json({ events: userInteraction.eventIds });
+  } catch (error) {
+    console.error('Error fetching event details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 

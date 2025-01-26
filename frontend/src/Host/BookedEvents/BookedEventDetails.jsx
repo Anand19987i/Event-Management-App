@@ -82,13 +82,18 @@ const BookedEventDetails = () => {
                         <p>|</p>
                         <span className='font-semibold'>{eventDetail.ticketPrice} <span className='text-sm'>onwards</span></span>
                     </div>
-                    <div className='mt-3 mx-3 w-1/2'>
-                        <p className='text-md font-bold'>About</p>
-                        {/* Render description with line breaks */}
-                        <div className='text-sm font-poppins'>
-                            {eventDetail.eventDescription ? eventDetail.eventDescription.split('\n').map((paragraph, index) => (
-                                <p key={index}>{paragraph}</p>
-                            )) : <span>Description is not available</span>}
+                    <div className='flex justify-between items-center'>
+                        <div className='mt-3 mx-3 w-1/2'>
+                            <p className='text-md font-bold'>About</p>
+                            {/* Render description with line breaks */}
+                            <div className='text-sm font-poppins'>
+                                {eventDetail.eventDescription ? eventDetail.eventDescription.split('\n').map((paragraph, index) => (
+                                    <p key={index}>{paragraph}</p>
+                                )) : <span>Description is not available</span>}
+                            </div>
+                        </div>
+                        <div>
+                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats} Seats Available</span>
                         </div>
                     </div>
 

@@ -78,7 +78,7 @@ const EditProfile = () => {
     };
 
     fetchUserDetail();
-  }, [dispatch]);
+  }, [user]);
 
 
   return (

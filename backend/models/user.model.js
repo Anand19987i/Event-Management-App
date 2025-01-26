@@ -21,7 +21,11 @@ const userSchema = mongoose.Schema({
     },
     bookedEvents: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Event' }
-    ]
+    ],
+    isFirstTime: {
+        type: Boolean,
+        default: true,
+    }
 
 }, {timestamps: true});
 

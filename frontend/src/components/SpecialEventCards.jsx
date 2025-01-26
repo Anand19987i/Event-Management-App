@@ -1,22 +1,37 @@
-import React from 'react';
+import React from "react";
 
 const SpecialEventCards = ({ event }) => {
   return (
     <div className="font-montserrat">
-      <div className="flex flex-col w-52 rounded-md cursor-pointer mb-10">
+      {/* Card Container */}
+      <div className="group flex flex-col w-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer mb-10">
+        {/* Event Thumbnail */}
         <img
-          src={event.eventThumbnail}
-          alt={event.eventTitle}
-          className="rounded-md w-full h-full object-cover"
+          src={event?.eventThumbnail}
+          alt={event?.eventTitle}
+          className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <p className='font-medium'>
-          {event?.eventTitle.length > 10
-            ? `${event.eventTitle.slice(0, 20)}...`
-            : event.eventTitle}
-        </p>
-        <span className="text-gray-600">{event?.eventType}</span>
-        <span className="text-gray-500">{event?.eventArtist.slice(0, 20)}...</span>
-        <span className="text-gray-500">{event.ticketPrice} onwards</span>
+
+        {/* Event Details */}
+        <div className="p-4 space-y-2">
+          {/* Event Title */}
+          <h3 className="text-lg font-semibold text-gray-800 truncate">
+            {event?.eventTitle}
+          </h3>
+
+          {/* Event Type */}
+          <p className="text-sm text-gray-600">{event?.eventType || "Special Event"}</p>
+
+          {/* Event Artist */}
+          <p className="text-sm text-gray-500 truncate">
+            {event?.eventArtist || "Unknown Artist"}
+          </p>
+
+          {/* Ticket Price */}
+          <p className="text-sm font-medium text-indigo-700">
+            ₹{event?.ticketPrice || "Free"} <span className="text-gray-500">onwards</span>
+          </p>
+        </div>
       </div>
     </div>
   );

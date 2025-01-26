@@ -5,7 +5,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import userRoute from  "./routes/user.route.js";
+import hostRoute from  "./routes/host.route.js";
 import eventRoute from  "./routes/event.route.js";
+import chatBotRoute from "./routes/chatbot.route.js";
 
 dotenv.config({});
 
@@ -22,7 +24,9 @@ const corsOption = {
 app.use(cors(corsOption));
 
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/host", hostRoute);
 app.use("/api/v1/event", eventRoute);
+app.use("/api/v1/chatbot", chatBotRoute);
 
 const port = process.env.PORT || 4000; 
 

@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { setLoading } from '../redux/eventSlice';
 import { Loader2 } from 'lucide-react';
 import MenuBar from './MenuBar';
+import HostNav from '@/main/HostNav';
 
 const EditEventDetail = () => {
   const Cities = [
@@ -60,6 +61,7 @@ const EditEventDetail = () => {
     endTimePeriod: eventDetail.endTimePeriod || '',
     eventThumbnail: eventDetail.eventThumbnail || '',
     eventPoster: eventDetail.eventPoster || '',
+    totalSeats: eventDetail.totalSeats || '',
   });
 
   const handleInputChange = (e) => {
@@ -109,6 +111,7 @@ const EditEventDetail = () => {
       data.append('endTime', formData.endTime);
       data.append('startTimePeriod', formData.startTimePeriod);
       data.append('endTimePeriod', formData.endTimePeriod);
+      data.append('totalSeats', formData.totalSeats);
       const response = await axios.post(
         `${EVENT_API_END_POINT}/edit/event/${eventId}`,
         data,
@@ -142,8 +145,7 @@ const EditEventDetail = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen font-montserrat">
-      <Navbar />
-      <MenuBar/>
+      <HostNav />
       <div className=" mx-auto p-6">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">Host Your Event</h1>
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
@@ -317,6 +319,17 @@ const EditEventDetail = () => {
                   <option value="PM">PM</option>
                 </select>
               </div>
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Total No. of Seats</label>
+              <input
+                type="text"
+                name="totalSeats"
+                placeholder="No. of Seats Available"
+                value={formData.totalSeats}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
             </div>
 
           </div>

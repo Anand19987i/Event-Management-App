@@ -14,6 +14,7 @@ const Signup = () => {
     const [input, setInput] = useState({
         name: "",
         email: "",
+        role: "user",
         password: "",
         confirmPassword: "",
     });
@@ -34,7 +35,6 @@ const Signup = () => {
         try {
             dispatch(setLoading(true));
 
-            // Make POST request with JSON data
             const response = await axios.post(
                 `${USER_API_END_POINT}/signup`,
                 {
@@ -77,26 +77,21 @@ const Signup = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
-            style={{
-                backgroundImage:
-                    "url('https://source.unsplash.com/random/1920x1080?event')",
-            }}
-        >
-            <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl max-w-md w-full">
-                <form onSubmit={submitHandler} className="w-full">
-                    <h1 className="text-2xl font-bold mb-4">
-                        Register to <span className="text-purple-600">Eventify</span>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-8">
+            <div className="bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full">
+                <form onSubmit={submitHandler} className="space-y-6">
+                    <h1 className="text-3xl font-bold text-gray-800 text-center">
+                        Sign Up to <span className="text-purple-600">Eventify</span>
                     </h1>
-                    <p className="mb-6 text-sm font-medium">
+                    <p className="text-sm text-center text-gray-500">
                         Already have an account?{" "}
                         <Link to="/login" className="text-purple-600 underline">
                             Sign in
                         </Link>
                     </p>
-                    <div className="flex flex-col mb-4">
-                        <label className="mb-2 text-gray-700">
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Name <span className="text-red-600">*</span>
                         </label>
                         <input
@@ -106,11 +101,11 @@ const Signup = () => {
                             type="text"
                             placeholder="Enter your name"
                             required
-                            className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
+                            className="w-full bg-gray-200 border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
                         />
                     </div>
-                    <div className="flex flex-col mb-4">
-                        <label className="mb-2 text-gray-700">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Email <span className="text-red-600">*</span>
                         </label>
                         <input
@@ -120,86 +115,77 @@ const Signup = () => {
                             onChange={changeHandler}
                             placeholder="Enter a valid email"
                             required
-                            className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
+                            className="w-full bg-gray-200 border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
                         />
                     </div>
-                    <div className="flex flex-col mb-4 relative">
-                        <label className="mb-2 text-gray-700">
+                    <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Password <span className="text-red-600">*</span>
                         </label>
-                        <div className="relative">
-                            <input
-                                type={type}
-                                name="password"
-                                value={input.password}
-                                onChange={changeHandler}
-                                placeholder="Enter a password"
-                                required
-                                className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600 w-full"
-                            />
-                            <span
-                                className="absolute right-3 top-3 cursor-pointer text-gray-500"
-                                onClick={handlePasswordIcon}
-                            >
-                                {React.createElement(icon, { size: 20 })}
-                            </span>
-                        </div>
+                        <input
+                            type={type}
+                            name="password"
+                            value={input.password}
+                            onChange={changeHandler}
+                            placeholder="Enter a password"
+                            required
+                            className="w-full bg-gray-200 border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
+                        />
+                        <span
+                            className="absolute top-11 right-3 cursor-pointer text-gray-500"
+                            onClick={handlePasswordIcon}
+                        >
+                            {React.createElement(icon, { size: 20 })}
+                        </span>
                     </div>
-                    <div className="flex flex-col mb-4 relative">
-                        <label className="mb-2 text-gray-700">
+                    <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Confirm Password <span className="text-red-600">*</span>
                         </label>
-                        <div className="relative">
-                            <input
-                                type={confirmType}
-                                name="confirmPassword"
-                                value={input.confirmPassword}
-                                onChange={changeHandler}
-                                placeholder="Confirm your password"
-                                required
-                                className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600 w-full"
-                            />
-                            <span
-                                className="absolute right-3 top-3 cursor-pointer text-gray-500"
-                                onClick={handlePasswordIcon2}
-                            >
-                                {React.createElement(eyeIcon, { size: 20 })}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="flex items-start mb-6">
                         <input
-                            type="checkbox"
-                            id="terms"
+                            type={confirmType}
+                            name="confirmPassword"
+                            value={input.confirmPassword}
+                            onChange={changeHandler}
+                            placeholder="Confirm your password"
                             required
-                            className="w-5 h-5 text-purple-600 focus:ring-purple-600 rounded border-gray-300"
+                            className="w-full bg-gray-200 border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
                         />
-                        <label htmlFor="terms" className="ml-3 text-gray-700">
-                            I agree to the terms and conditions
-                        </label>
+                        <span
+                            className="absolute top-11 right-3 cursor-pointer text-gray-500"
+                            onClick={handlePasswordIcon2}
+                        >
+                            {React.createElement(eyeIcon, { size: 20 })}
+                        </span>
                     </div>
+
                     {errorMessage && (
-                        <p className="text-red-500 text-center font-medium mb-3">
-                            {errorMessage}
-                        </p>
+                        <p className="text-red-500 text-center font-medium">{errorMessage}</p>
                     )}
-                    {loading ? (
-                        <button
-                            type="submit"
-                            className="bg-purple-800 text-white py-3 px-6 rounded-2xl mx-auto my-5 flex items-center justify-center w-full"
-                        >
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Please Wait
-                        </button>
-                    ) : (
-                        <button
-                            type="submit"
-                            className="flex bg-purple-800 text-white px-6 py-3 rounded-2xl mx-auto my-5 justify-center w-full"
-                        >
-                            Sign Up
-                        </button>
-                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3 bg-purple-800 text-white font-semibold rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-600 disabled:bg-purple-500 flex items-center justify-center"
+                    >
+                        {loading ? (
+                            <>
+                                <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                                Please Wait
+                            </>
+                        ) : (
+                            "Sign Up"
+                        )}
+                    </button>
                 </form>
+
+                <p className="text-center text-sm text-gray-500 mt-4">Or</p>
+                <Link
+                    to="/signup-as-host"
+                    className="w-full py-3 mt-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-400 text-center block"
+                >
+                    Sign Up as Host
+                </Link>
             </div>
         </div>
     );

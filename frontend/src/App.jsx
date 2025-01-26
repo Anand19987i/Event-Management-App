@@ -6,7 +6,7 @@ import Home from './Home'
 import EditProfile from './components/EditProfile'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import CreateEvent from './Host/CreateEvent'
+import CreateEvent from './main/CreateEvent'
 import EventDetail from './Host/EventDetail'
 import AIChat from './Host/AIChat'
 import PersonalHostedEvents from './Host/PersonalHostedEvents'
@@ -15,6 +15,13 @@ import FabricCreation from './Host/FabricCreation'
 import PersonalEventDetail from './Host/PersonalEventDetail'
 import BookedEvents from './Host/BookedEvents/BookedEvents'
 import BookedEventDetails from './Host/BookedEvents/BookedEventDetails'
+import ChatBot from './components/ChatAssitant/ChatBot'
+import OTPVerification from './auth/OtpVerification'
+import HostLogin from './main/HostLogin'
+import HostSignup from './main/HostSignup'
+import HostMain from './main/HostMain'
+import EditHostProfile from './main/EditHostProfile'
+import SpecialEvent from './components/SpecialEvent'
 
 const App = () => {
   const appRouter = createBrowserRouter([
@@ -31,8 +38,20 @@ const App = () => {
       element: <Signup />
     },
     {
+      path: "/login-as-host",
+      element: <HostLogin/>
+    },
+    {
+      path: "/signup-as-host",
+      element: <HostSignup/>
+    },
+    {
       path: "/edit/:name/:id",
       element: <EditProfile />
+    },
+    {
+      path: "/host-edit/:name/:id",
+      element: <EditHostProfile />
     },
     {
       path: "/host/event/:id",
@@ -69,6 +88,18 @@ const App = () => {
     {
       path: "/booked/event/details/:eventTitle/:eventId",
       element: <BookedEventDetails />
+    },
+    {
+      path: "/eventify/api/v1/ai-assistant/chatbot",
+      element: <ChatBot />
+    },
+    {
+      path: "/host/main",
+      element: <HostMain/>
+    },
+    {
+      path: "/view/events",
+      element: <SpecialEvent/>
     }
   ])
   return (

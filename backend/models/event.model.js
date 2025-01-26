@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 const eventSchema = mongoose.Schema(
   {
-    userId: {
+    hostId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Host',
       required: true,
     },
     eventThumbnail: {
@@ -63,6 +63,10 @@ const eventSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    totalSeats: {
+      type : Number,
+      required: true,
+    },
     booked: [
       { 
         type: mongoose.Schema.Types.ObjectId, 
@@ -74,6 +78,7 @@ const eventSchema = mongoose.Schema(
       required: true, 
       default: 100  // Default max capacity for an event
     },
+
   },
   { timestamps: true }
 );

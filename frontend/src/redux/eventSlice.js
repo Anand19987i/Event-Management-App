@@ -8,6 +8,7 @@ const initialState = {
   singleEvent: {},
   userEvents: [],
   userEventDetail: {},
+  recommendEvents: [],
   bookedEvents: [],
   checkBooked: false,
   loading: false,
@@ -27,6 +28,9 @@ const eventSlice = createSlice({
     },
     setEventDetail: (state, action) => {
       state.eventDetail = action.payload;
+    },
+    setRecommendEvents: (state, action) => {
+      state.recommendEvents  = action.payload;
     },
     setSingleEvent: (state, action) => {
         state.singleEvent = action.payload;
@@ -52,6 +56,6 @@ const eventSlice = createSlice({
   },
 });
 
-export const {setEvents, setEventId, setEventDetail, setSingleEvent, setUserEvents, setUserEventDetail, setBookedEvents, setCheckBooked, setLoading, setError } = eventSlice.actions;
+export const {setEvents, setEventId, setEventDetail, setRecommendEvents, setSingleEvent, setUserEvents, setUserEventDetail, setBookedEvents, setCheckBooked, setLoading, setError } = eventSlice.actions;
 
 export default eventSlice.reducer;

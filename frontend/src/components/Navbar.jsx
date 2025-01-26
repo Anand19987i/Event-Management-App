@@ -26,7 +26,7 @@ const Navbar = () => {
 
   return (
     <div className="flex items-center justify-between w-full px-20 h-20 font-montserrat shadow-md">
-      <Link to="/"><img src="/logo2.png" alt="" className='h-10 w-32' /></Link>
+      <Link to="/" className='text-xl font-semibold'><span className='font-semibold font-montserrat'>E</span>vent<span className='text-purple -900 font-bold font-serif'>i</span>fy</Link>
       <div className="flex items-center gap-5">
         {user?._id && <div className="flex items-center" ref={cityRef}>
           <span className="cursor-pointer" onClick={() => setShowAllCities(!showAllCities)}>

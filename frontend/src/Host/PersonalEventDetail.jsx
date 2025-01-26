@@ -8,6 +8,7 @@ import Navbar from '../components/Navbar';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdDelete } from 'react-icons/md';
 import { PenSquare } from 'lucide-react';
+import HostNav from '@/main/HostNav';
 
 const PersonalEventDetail = () => {
     const { eventDetail, loading, error } = useSelector(store => store.event);
@@ -76,7 +77,7 @@ const PersonalEventDetail = () => {
 
     return (
         <>
-            <Navbar />
+            <HostNav />
             <div className="w-full font-montserrat">
                 <div className="flex flex-col text-start mx-4 md:mx-64 shadow-md">
                     <img src={eventDetail.eventPoster} alt={eventDetail.eventTitle} className="w-full h-auto shadow-md" />
@@ -85,7 +86,7 @@ const PersonalEventDetail = () => {
 
                         <div className='flex gap-2'>
                             <Link to={`/edit/event/${eventId}`}>
-                                <button className="flex items-center gap-1 text-sm text-white px-5 py-3 mt-2 bg-green-700 font-medium rounded hover:bg-green-800 transition duration-300">
+                                <button className="flex items-center gap-1 text-sm text-white px-5 py-3 mt-2 bg-indigo-700 font-medium rounded hover:bg-indigo-800 transition duration-300">
                                    <PenSquare className='h-4 w-4'/> Edit
                                 </button>
                             </Link>
@@ -109,12 +110,18 @@ const PersonalEventDetail = () => {
                         <p>|</p>
                         <span className='font-semibold'>{eventDetail.ticketPrice} <span className='text-sm'>onwards</span></span>
                     </div>
-                    <div className='mt-3 mx-3 w-1/2'>
-                        <p className='text-md font-bold'>About</p>
-                        <div className='text-sm font-poppins'>
-                            {eventDetail.eventDescription ? eventDetail.eventDescription.split('\n').map((paragraph, index) => (
-                                <p key={index}>{paragraph}</p>
-                            )) : <span>Description is not available</span>}
+                    <div className='flex justify-between items-center'>
+                        <div className='mt-3 mx-3 w-1/2'>
+                            <p className='text-md font-bold'>About</p>
+                            {/* Render description with line breaks */}
+                            <div className='text-sm font-poppins'>
+                                {eventDetail.eventDescription ? eventDetail.eventDescription.split('\n').map((paragraph, index) => (
+                                    <p key={index}>{paragraph}</p>
+                                )) : <span>Description is not available</span>}
+                            </div>
+                        </div>
+                        <div>
+                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats} Seats Available</span>
                         </div>
                     </div>
                 </div>

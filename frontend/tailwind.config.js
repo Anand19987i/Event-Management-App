@@ -15,7 +15,8 @@ export default {
   			poppins: [
   				'Poppins',
   				'sans-serif'
-  			]
+  			],
+			
   		},
 		  keyframes: {
 			expanding: {

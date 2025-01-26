@@ -6,6 +6,7 @@ import MenuBar from './MenuBar';
 import { Circle, RectangleHorizontal, TextIcon, Triangle, Type, MinusCircle, Minus, Star, Diamond } from 'lucide-react';
 import { FaImages } from 'react-icons/fa6';
 import { MdDelete, MdPolyline } from "react-icons/md";
+import HostNav from '@/main/HostNav';
 
 
 const FabricCreation = () => {
@@ -218,8 +219,7 @@ const FabricCreation = () => {
 
   return (
     <>
-      <Navbar />
-      <MenuBar />
+      <HostNav />
       <div className="flex font-poppins">
         <div className="flex flex-col items-start w-1/4 bg-gray-100 mt-3">
           <div className="flex flex-col mb-4 gap-2 w-full">
@@ -304,7 +304,7 @@ const FabricCreation = () => {
             className="shadow-lg border border-gray-100 ml-20 mt-5"
           />
         </div>
-        <div className="bg-purple-600 h-10 w-30 mr-44 mt-10 flex items-center rounded shadow-md text-white font-semibold">
+        <div className="bg-indigo-600 h-10 w-30 mr-44 mt-10 flex items-center rounded shadow-md text-white font-semibold">
           <button onClick={saveImage} className="flex px-5 items-center gap-1"><GoUpload /> Save</button>
         </div>
       </div>

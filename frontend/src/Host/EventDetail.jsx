@@ -54,7 +54,7 @@ const EventDetail = () => {
                 setIsBooked(true);
                 setMessage("Booked");
                 dispatch(setCheckBooked(true));
-                
+
             }
         } catch (error) {
             console.log("Error in booking", error);
@@ -95,7 +95,7 @@ const EventDetail = () => {
                     {/* Event Title and Book Button */}
                     <div className="mx-3 mt-4 flex justify-between items-center">
                         <span className="text-3xl font-bold text-gray-800">{eventDetail.eventTitle}</span>
-                        <button onClick={bookEvent} className={`text-white px-6 py-3 mt-2 ${isBooked ? "bg-gray-600 hover:bg-gray-800 text-white" :  "bg-pink-600 hover:bg-pink-700"} font-semibold rounded  transition duration-300`}>
+                        <button onClick={bookEvent} className={`text-white px-6 py-3 mt-2 ${isBooked ? "bg-gray-600 hover:bg-gray-800 text-white" : "bg-pink-600 hover:bg-pink-700"} font-semibold rounded  transition duration-300`}>
                             {message}
                         </button>
                     </div>
@@ -113,14 +113,20 @@ const EventDetail = () => {
                         <span>{eventDetail.state}</span>
                         <p>|</p>
                         <span className='font-semibold'>{eventDetail.ticketPrice} <span className='text-sm'>onwards</span></span>
+
                     </div>
-                    <div className='mt-3 mx-3 w-1/2'>
-                        <p className='text-md font-bold'>About</p>
-                        {/* Render description with line breaks */}
-                        <div className='text-sm font-poppins'>
-                            {eventDetail.eventDescription ? eventDetail.eventDescription.split('\n').map((paragraph, index) => (
-                                <p key={index}>{paragraph}</p>
-                            )) : <span>Description is not available</span>}
+                    <div className='flex justify-between items-center'>
+                        <div className='mt-3 mx-3 w-1/2'>
+                            <p className='text-md font-bold'>About</p>
+                            {/* Render description with line breaks */}
+                            <div className='text-sm font-poppins'>
+                                {eventDetail.eventDescription ? eventDetail.eventDescription.split('\n').map((paragraph, index) => (
+                                    <p key={index}>{paragraph}</p>
+                                )) : <span>Description is not available</span>}
+                            </div>
+                        </div>
+                        <div>
+                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats} Seats Available</span>
                         </div>
                     </div>
 
