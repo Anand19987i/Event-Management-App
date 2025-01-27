@@ -43,7 +43,6 @@ const CreateEvent = () => {
     ticketPrice: '',
     state: '',
     eventDate: '',
-    eventThumbnail: null,
     eventPoster: null,
     totalSeats: '',
   });
@@ -80,7 +79,6 @@ const CreateEvent = () => {
     try {
       dispatch(setLoading(true));
       const data = new FormData();
-      data.append("eventThumbnail", formData.eventThumbnail);
       data.append("eventPoster", formData.eventPoster); // Append poster file
       data.append('eventTitle', formData.eventTitle);
       data.append('eventType', formData.eventType);
@@ -121,23 +119,12 @@ const CreateEvent = () => {
   return (
     <div className="bg-gray-50 min-h-screen font-montserrat">
       <HostNav />
-      <MenuBar />
       <div className=" mx-auto p-6">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">Host Your Event</h1>
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
           {/* Grid Container */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Row 1 */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">Event Thumbnail</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                name="eventThumbnail"
-                className="block w-full text-gray-700 px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
             <div>
               <label className="block text-gray-700 font-medium mb-2">Event Poster</label>
               <input

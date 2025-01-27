@@ -22,6 +22,7 @@ import HostSignup from './main/HostSignup'
 import HostMain from './main/HostMain'
 import EditHostProfile from './main/EditHostProfile'
 import SpecialEvent from './components/SpecialEvent'
+import BookedEventDetail from './main/BookedEventDetail'
 
 const App = () => {
   const appRouter = createBrowserRouter([
@@ -50,7 +51,7 @@ const App = () => {
       element: <EditProfile />
     },
     {
-      path: "/host-edit/:name/:id",
+      path: "/edit-host/:name/:id",
       element: <EditHostProfile />
     },
     {
@@ -100,7 +101,11 @@ const App = () => {
     {
       path: "/view/events",
       element: <SpecialEvent/>
-    }
+    },
+    {
+      path: "/no-of-bookings/:id",
+      element: <BookedEventDetail/>
+    },
   ])
   return (
     <div>

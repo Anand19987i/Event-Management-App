@@ -1,6 +1,9 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
+  const { host } = useSelector(store => store.auth);
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-700 via-indigo-900 to-black text-white"
@@ -13,12 +16,12 @@ const HeroSection = () => {
           Empower yourself to design, host, and manage unique events with ease. EventifyHost is here to turn your ideas into reality.
         </p>
         <div className="flex flex-wrap justify-center gap-6">
-          <button className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold shadow-lg hover:scale-105 hover:bg-indigo-100 transition-transform duration-300">
+          <Link to={`/host/event/${host?._id}`} className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold shadow-lg hover:scale-105 hover:bg-indigo-100 transition-transform duration-300">
             Create Event
-          </button>
-          <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-white hover:text-indigo-700 transition-transform duration-300">
+          </Link>
+          <Link to={`/list/events/${host?._id}`} className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-white hover:text-indigo-700 transition-transform duration-300">
             Manage Events
-          </button>
+          </Link>
         </div>
       </div>
     </div>

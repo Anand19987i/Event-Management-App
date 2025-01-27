@@ -5,7 +5,7 @@ import HeroSection from './HeroSection';
 
 const HostMain = () => {
     const {host} = useSelector(store => store.auth); 
-    console.log(host._id)
+    console.log(host?._id)
   return (
     <div>
       <HostNav/>

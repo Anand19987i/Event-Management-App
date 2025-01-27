@@ -7,7 +7,7 @@ const RecommendationEventCard = ({ event }) => {
       <div className="group flex flex-col w-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-white cursor-pointer mb-10">
         {/* Event Thumbnail */}
         <img
-          src={event?.eventThumbnail}
+          src={event?.eventPoster}
           alt={event?.eventTitle}
           className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
         />

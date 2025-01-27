@@ -158,7 +158,7 @@ export const userDetail = async (req, res) => {
         }
 
         // Check for existing details of the user with the provided userId
-        let details = await Detail.findOne({ userId: id });
+        let details = await User.findOne({ _id: id });
 
         if (details) {
             // Update existing user details
@@ -172,8 +172,8 @@ export const userDetail = async (req, res) => {
             await details.save();
         } else {
             // Create a new record for the user if no details exist
-            details = await Detail.create({
-                userId: id,
+            details = await User.create({
+                _id: id,
                 avatar: avatarUrl || "default-avatar-url.png",
                 mobile,
                 firstname,
@@ -204,7 +204,7 @@ export const fetchUserDetail = async (req, res) => {
     }
 
     try {
-        const userDetail = await Detail.findOne({ userId: id });
+        const userDetail = await User.findOne({ _id: id });
         if (!userDetail) {
             return res.status(404).json({ message: "User not found" });
         }

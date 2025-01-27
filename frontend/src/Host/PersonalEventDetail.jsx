@@ -9,6 +9,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { MdDelete } from 'react-icons/md';
 import { PenSquare } from 'lucide-react';
 import HostNav from '@/main/HostNav';
+import clsx from 'clsx';
 
 const PersonalEventDetail = () => {
     const { eventDetail, loading, error } = useSelector(store => store.event);
@@ -108,7 +109,7 @@ const PersonalEventDetail = () => {
                         <span className='flex items-center gap-1'> <FaLocationDot className='text-green-700 text w-6 h-6' /> {eventDetail.eventLocation}</span>
                         <span>{eventDetail.state}</span>
                         <p>|</p>
-                        <span className='font-semibold'>{eventDetail.ticketPrice} <span className='text-sm'>onwards</span></span>
+                        <span className='font-semibold'>₹{eventDetail.ticketPrice} <span className='text-sm'>onwards</span></span>
                     </div>
                     <div className='flex justify-between items-center'>
                         <div className='mt-3 mx-3 w-1/2'>
@@ -121,8 +122,9 @@ const PersonalEventDetail = () => {
                             </div>
                         </div>
                         <div>
-                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats} Seats Available</span>
+                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats - eventDetail.booked.length} Seats Available</span>
                         </div>
+                        <Link to={`/no-of-bookings/${eventDetail._id}`} className="flex  text-indigo-800 underline p-2">No. of Booking</Link>
                     </div>
                 </div>
             </div>
@@ -139,6 +141,7 @@ const PersonalEventDetail = () => {
                     </div>
                 </div>
             )}
+           
         </>
     );
 };

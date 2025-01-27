@@ -33,8 +33,14 @@ const HostNav = () => {
 
   return (
     <div className="flex items-center justify-between w-full px-20 h-20 font-montserrat shadow-md">
-      <Link to="/host/main" className='text-xl font-semibold'><span className='font-semibold font-montserrat'>E</span>vent<span className='text-purple -900 font-bold font-serif'>i</span>fy
-      <span className='text-indigo-700'>Host</span></Link>
+      <Link to="/host/main" className="text-3xl font-bold flex items-center">
+        <span className="font-montserrat text-purple-700 tracking-tight">E</span>
+        <span className="text-gray-800 tracking-wide">vent</span>
+        <span className="font-serif text-purple-900 italic">i</span>
+        <span className="text-gray-800 tracking-wide">fy</span>
+        <span className="text-indigo-700">Host</span>
+      </Link>
+
       <div className="flex items-center gap-5">
         {
           host ? <div className="flex items-center gap-1">
@@ -57,8 +63,8 @@ const HostNav = () => {
               {viewProfile && <HostViewSlide />}
             </div>
           </div> : <div className='flex gap-4 items-center'>
-          <Link to={`/login`} className='py-2 px-3 rounded hover:bg-purple-800 bg-purple-600 text-white font-medium text-sm'>Login</Link>
-          <Link to={`/signup`} className='py-2 px-3 rounded hover:bg-gray-800 bg-black text-white font-medium text-sm'>Signup</Link>
+            <Link to={`/login`} className='py-2 px-3 rounded hover:bg-purple-800 bg-purple-600 text-white font-medium text-sm'>Login</Link>
+            <Link to={`/signup`} className='py-2 px-3 rounded hover:bg-gray-800 bg-black text-white font-medium text-sm'>Signup</Link>
           </div>
         }
       </div>

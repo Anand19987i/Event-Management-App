@@ -5,7 +5,6 @@ import axios from "axios";
 import { USER_API_END_POINT } from "../utils/constant";
 import { setLoading, setUserDetail } from "../redux/authSlice";
 import { Loader2 } from "lucide-react";
-import RegisterPopup from "./RegisterPopup";
 import { useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
@@ -50,8 +49,9 @@ const EditProfile = () => {
         withCredentials: true,
       });
       if (response.data.success) {
-        dispatch(setUserDetail(response.data.userDetail));
+        dispatch(setUserDetail(response.data.userDetail)); // Update Redux store
         console.log("Profile updated successfully");
+        setProfileImage(response.data.userDetail.avatar || "/default-pic.avif"); // Update the profile image
       }
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred");
@@ -70,16 +70,26 @@ const EditProfile = () => {
       try {
         const response = await axios.get(`${USER_API_END_POINT}/detail/${user._id}`, { withCredentials: true });
         if (response.data.success) {
-          dispatch(setUserDetail(response.data.userDetail));
+          dispatch(setUserDetail(response.data.userDetail)); // Update Redux store with user details
         }
       } catch (error) {
         console.error("Failed to fetch user details:", error.message);
       }
     };
 
-    fetchUserDetail();
-  }, [user]);
+    // Fetch user detail if it's not already available
+    if (!userDetail) {
+      fetchUserDetail();
+    }
+  }, [user, userDetail, dispatch]);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="animate-spin text-purple-800" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative z-0">
@@ -175,7 +185,6 @@ const EditProfile = () => {
               )}
             </div>
           </form>
-
         </div>
       </div>
     </div>

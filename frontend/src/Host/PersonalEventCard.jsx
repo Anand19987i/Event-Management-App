@@ -18,7 +18,7 @@ const PersonalEventCard = ({ event }) => {
             .toLowerCase()}/${event?._id}`}
         >
           <img
-            src={event.eventThumbnail}
+            src={event.eventPoster}
             alt={event.eventTitle}
             className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
           />

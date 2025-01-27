@@ -2,6 +2,25 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
 const hostSchema = mongoose.Schema({
+    avatar: {
+        type: String,
+    },
+    mobile: {
+        type: Number,
+        default: "",
+    },
+    firstname: {
+        type: String,
+        default: "",
+    },
+    lastname: {
+        type: String,
+        default: "",
+    },
+    address: {
+        type: String,
+        default: "",
+    },
     name: {
         type: String,
         required: true,

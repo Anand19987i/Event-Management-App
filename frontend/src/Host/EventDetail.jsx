@@ -7,6 +7,7 @@ import { EVENT_API_END_POINT } from '../utils/constant';
 import Navbar from '../components/Navbar';
 import { FaLocationDot } from "react-icons/fa6";
 import { setLoading } from '@/redux/authSlice';
+import RelatedEvents from './Recommendation/RelatedEvents';
 
 const EventDetail = () => {
     const { eventDetail, checkBooked, loading, error } = useSelector(store => store.event);
@@ -88,9 +89,9 @@ const EventDetail = () => {
         <>
             <Navbar />
             <div className="w-full font-montserrat">
-                <div className="flex flex-col text-start mx-4 md:mx-64 shadow-md">
+                <div className="flex flex-col text-start mx-4 md:mx-64  shadow-sm py-3">
                     {/* Event Image */}
-                    <img src={eventDetail.eventPoster} alt={eventDetail.eventTitle} className="w-full h-auto shadow-md" />
+                    <img src={eventDetail.eventPoster} alt={eventDetail.eventTitle} className="w-full h-96 object-fill rounded-md shadow-md" />
 
                     {/* Event Title and Book Button */}
                     <div className="mx-3 mt-4 flex justify-between items-center">
@@ -126,12 +127,15 @@ const EventDetail = () => {
                             </div>
                         </div>
                         <div>
-                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats} Seats Available</span>
+                        <span className='font-bold text-xl p-4'>{ eventDetail.totalSeats - eventDetail.booked.length} Seats Available</span>
                         </div>
                     </div>
-
                 </div>
+                <div className='p-3 ml-32'>
+                <RelatedEvents />
             </div>
+            </div>
+          
         </>
     );
 };

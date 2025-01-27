@@ -15,14 +15,11 @@ export const createEvent = async (req, res) => {
   try {
     const { eventTitle, eventType, eventArtist, eventDescription, eventLocation, ticketPrice, state, eventDate, startTime, startTimePeriod, endTime, endTimePeriod, totalSeats } = req.body;
     const { hostId } = req.params;
-    const { eventThumbnail, eventPoster } = req.files;
-    const eventThumbnailUri = getDataUri(eventThumbnail[0]);
-    const cloudThumbnailResponse = await cloudinary.uploader.upload(eventThumbnailUri);
+    const { eventPoster } = req.files;
     const eventPosterUri = getDataUri(eventPoster[0]);
     const cloudPosterResponse = await cloudinary.uploader.upload(eventPosterUri);
     const newEvent = await Event.create({
       hostId: hostId,
-      eventThumbnail: cloudThumbnailResponse.secure_url,
       eventTitle,
       eventType,
       eventArtist,
@@ -56,7 +53,7 @@ export const createEvent = async (req, res) => {
 export const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find().populate("hostId", "name")
-      .select('eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation').sort({ createdAt: -1 });
+      .select('eventTitle eventPoster ticketPrice eventArtist eventType eventLocation').sort({ createdAt: -1 });
 
     return res.status(200).json({ success: true, events });
   } catch (error) {
@@ -73,7 +70,7 @@ export const getEventDetails = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid Event ID' });
     }
 
-    const eventDetail = await Event.findById(eventId).select("eventTitle eventDescription eventArtist eventThumbnail ticketPrice eventPoster state eventDate eventLocation eventType startTime endTime startTimePeriod endTimePeriod totalSeats");
+    const eventDetail = await Event.findById(eventId).select("eventTitle eventDescription eventArtist eventPoster ticketPrice state eventDate eventLocation eventType startTime endTime startTimePeriod endTimePeriod totalSeats booked");
 
     if (!eventDetail) {
       return res.status(404).json({ success: false, message: 'Event not found' });
@@ -90,7 +87,7 @@ export const getUserEvents = async (req, res) => {
   try {
     const { id } = req.params;
     const hostId = id;
-    const userEvents = await Event.find({ hostId }).select("eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation").sort({ createdAt: -1 });
+    const userEvents = await Event.find({ hostId }).select("eventTitle eventPoster ticketPrice eventArtist eventType eventLocation").sort({ createdAt: -1 });
     return res.status(201).json({ success: true, userEvents });
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -101,16 +98,10 @@ export const editUserEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const { eventTitle, eventArtist, eventDescription, eventType, eventDate, ticketPrice, eventLocation, state, endTime, startTime, startTimePeriod, endTimePeriod, totalSeats } = req.body;
-    let { eventThumbnail, eventPoster } = req.files;
+    let { eventPoster } = req.files;
 
-    // Check if eventThumbnail and eventPoster are provided
-    let cloudThumbnailResponse = null;
+    // Check if eventPoster and eventPoster are provided
     let cloudPosterResponse = null;
-
-    if (eventThumbnail && eventThumbnail.length > 0) {
-      const eventThumbnailUri = getDataUri(eventThumbnail[0]);
-      cloudThumbnailResponse = await cloudinary.uploader.upload(eventThumbnailUri);
-    }
 
     if (eventPoster && eventPoster.length > 0) {
       const eventPosterUri = getDataUri(eventPoster[0]);
@@ -129,7 +120,6 @@ export const editUserEvent = async (req, res) => {
         eventDate,
         ticketPrice,
         eventLocation,
-        eventThumbnail: cloudThumbnailResponse ? cloudThumbnailResponse.secure_url : existingEvent.eventThumbnail,
         eventPoster: cloudPosterResponse ? cloudPosterResponse.secure_url : existingEvent.eventPoster,
         state,
         endTime,
@@ -228,7 +218,7 @@ export const fetchBookedEvents = async (req, res) => {
     // Check if user exists
     const user = await User.findById(userId).populate({
       path: "bookedEvents",
-      select: "eventTitle eventThumbnail ticketPrice eventArtist eventType eventLocation",
+      select: "eventTitle eventPoster ticketPrice eventArtist eventType eventLocation",
     });
 
     if (!user) {
@@ -247,7 +237,36 @@ export const fetchBookedEvents = async (req, res) => {
     return res.status(500).json({ success: false, message: "An error occurred while fetching booked events." });
   }
 };
+export const fetchUserWhoBookedEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
 
+    if (!mongoose.isValidObjectId(eventId)) {
+      return res.status(400).json({ success: false, message: "Invalid event ID." });
+    }
+
+    const event = await Event.findById(eventId).populate({
+      path: "booked",
+      select: "firstname lastname email mobile",
+    });
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found." });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Users who booked the event retrieved successfully!",
+      bookedUsers: event.booked,
+    });
+  } catch (error) {
+    console.error("Error fetching users who booked the event:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching users.",
+    });
+  }
+};
 
 export const AiIntegration = async (req, res) => {
   const { query } = req.body;
@@ -273,6 +292,7 @@ export const AiIntegration = async (req, res) => {
     });
   }
 };
+
 export const recommendation = async (req, res) => {
   const { selectedTypes, deselectedTypes } = req.body;
   const { userId } = req.params;
@@ -316,7 +336,7 @@ export const recommendation = async (req, res) => {
 
     // Fetch and return the updated interaction with populated event details
     const updatedInteraction = await UserEventInteraction.findOne({ userId: userId })
-      .populate('eventIds'); 
+      .populate('eventIds');
 
     res.status(200).json({
       events: updatedInteraction.eventIds, // Populated event details
@@ -345,5 +365,26 @@ export const getRecommendEventDetails = async (req, res) => {
   }
 };
 
+export const getRelatedEvents = async (req, res) => {
+  const { eventType } = req.params;
+  try {
+    const relatedEvents = await Event.find({ eventType }).select("eventTitle eventDescription eventArtist eventPoster ticketPrice state eventDate eventLocation eventType startTime endTime startTimePeriod endTimePeriod totalSeats booked");
+    if (relatedEvents.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No related events found",
+      });
+    }
 
-
+    return res.status(200).json({
+      success: true,
+      events: relatedEvents
+    });
+  } catch (error) {
+    console.error("Error fetching related events:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { USER_API_END_POINT } from "../utils/constant";
+import { HOST_API_END_POINT, USER_API_END_POINT } from "../utils/constant";
 import { setLoading, setUserDetail } from "../redux/authSlice";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ const EditHostProfile = () => {
     }
     try {
       dispatch(setLoading(true));
-      const response = await axios.post(`${USER_API_END_POINT}/edit/${host._id}`, formData, {
+      const response = await axios.post(`${HOST_API_END_POINT}/edit/${host._id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
@@ -67,7 +67,7 @@ const EditHostProfile = () => {
 
     const fetchUserDetail = async () => {
       try {
-        const response = await axios.get(`${USER_API_END_POINT}/detail/${host._id}`, { withCredentials: true });
+        const response = await axios.get(`${HOST_API_END_POINT}/detail/${host._id}`, { withCredentials: true });
         if (response.data.success) {
           dispatch(setUserDetail(response.data.userDetail));
         }
@@ -163,12 +163,12 @@ const EditHostProfile = () => {
             </div>
             <div className="flex justify-center mt-6">
               {loading ? (
-                <button type="button" className="bg-purple-800 text-white py-3 px-6 rounded-2xl flex items-center">
+                <button type="button" className="bg-indigo-700 text-white py-3 px-6 rounded-2xl flex items-center">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please Wait
                 </button>
               ) : (
-                <button type="submit" className="bg-purple-800 text-white px-6 py-3 rounded-2xl">
+                <button type="submit" className="bg-indigo-600 text-white px-6 py-3 rounded-2xl">
                   Save Changes
                 </button>
               )}

@@ -59,7 +59,6 @@ const EditEventDetail = () => {
     startTimePeriod: eventDetail.startTimePeriod || '',
     endTime: eventDetail.endTime || '',
     endTimePeriod: eventDetail.endTimePeriod || '',
-    eventThumbnail: eventDetail.eventThumbnail || '',
     eventPoster: eventDetail.eventPoster || '',
     totalSeats: eventDetail.totalSeats || '',
   });
@@ -97,7 +96,6 @@ const EditEventDetail = () => {
     try {
       dispatch(setLoading(true));
       const data = new FormData();
-      data.append("eventThumbnail", formData.eventThumbnail || thumbnailPreview);
       data.append("eventPoster", formData.eventPoster || posterPreview); // Append poster file
       data.append('eventTitle', formData.eventTitle);
       data.append('eventType', formData.eventType);
@@ -152,17 +150,6 @@ const EditEventDetail = () => {
           {/* Grid Container */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Row 1 */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">Event Thumbnail</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                name="eventThumbnail"
-                className="block w-full text-gray-700 px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-    
-            </div>
             <div>
               <label className="block text-gray-700 font-medium mb-2">Event Poster</label>
               <input

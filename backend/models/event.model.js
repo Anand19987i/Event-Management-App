@@ -7,10 +7,6 @@ const eventSchema = mongoose.Schema(
       ref: 'Host',
       required: true,
     },
-    eventThumbnail: {
-      type: String,
-      required: true,
-    },
     eventPoster: {
       type: String,
       required: true,
@@ -73,12 +69,7 @@ const eventSchema = mongoose.Schema(
         ref: 'User' 
       }
     ],
-    maxCapacity: {
-      type: Number, 
-      required: true, 
-      default: 100  // Default max capacity for an event
-    },
-
+    
   },
   { timestamps: true }
 );
