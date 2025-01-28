@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import HostNav from './HostNav';
 import HeroSection from './HeroSection';
+import MainSection from './MainSection';
 
 const HostMain = () => {
     const {host} = useSelector(store => store.auth); 
@@ -10,6 +11,7 @@ const HostMain = () => {
     <div>
       <HostNav/>
       <HeroSection/>
+      <MainSection/>
     </div>
   )
 }

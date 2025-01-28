@@ -77,7 +77,7 @@ const EditHostProfile = () => {
     };
 
     fetchUserDetail();
-  }, [user]);
+  }, [user, userDetail, dispatch]);
 
 
   return (

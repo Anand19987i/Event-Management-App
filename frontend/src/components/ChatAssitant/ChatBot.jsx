@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { CHATBOT_API_END_POINT } from "@/utils/constant";
 import { BiCreditCard, BiSolidCommentDetail } from "react-icons/bi";
 import { RiCustomerService2Line } from "react-icons/ri";
-import "./ChatBot.css"
+import "./ChatBot.css";
 
 const ChatBot = () => {
   const [userInput, setUserInput] = useState("");
@@ -56,13 +56,18 @@ const ChatBot = () => {
   };
 
   const renderMessage = (text) => {
-    // Split the response text by line breaks and render as paragraphs
+    // Format headings (make them bold and blue)
+    text = text.replace(/^(#\s?)(.*)/gm, '<span class="text-blue-600 font-bold">$2</span>');
+  
+    // Format numbered list items (make numbers green)
+    text = text.replace(/^\d+\./gm, (match) => `<span class="text-green-500">${match}</span>`);
+  
+    // Handle line breaks and rendering as paragraphs
     return text.split("\n").map((line, index) => (
-      <p key={index} className="text-sm text-black">
-        {line}
-      </p>
+      <p key={index} className="text-sm text-black" dangerouslySetInnerHTML={{ __html: line }} />
     ));
   };
+  
 
   const texts = ["Frequently Asked Questions", "Welcome to Eventify Service"];
   const [currentText, setCurrentText] = useState(texts[0]);
@@ -78,9 +83,8 @@ const ChatBot = () => {
   }, [index]);
 
   return (
-    <>  
+    <>
       <Navbar />
-      <MenuBar />
       <div className="font-montserrat flex flex-col h-96">
         {!loading && responses.length === 0 && (
           <div className="relative top-20">
@@ -92,19 +96,19 @@ const ChatBot = () => {
               <div className="w-48 h-48 bg-gray-200 rounded-sm absolute top-16 left-[30%]">
                 <p className="text-left mt-10 p-2 px-5 font-semibold">Can I get Event Details ?</p>
                 <div className=" absolute right-4 bottom-3 h-10 w-10 bg-white rounded-full">
-                  <BiSolidCommentDetail className="absolute left-2 top-2 h-6 w-6   " />
+                  <BiSolidCommentDetail className="absolute left-2 top-2 h-6 w-6" />
                 </div>
               </div>
               <div className="w-48 h-48 bg-gray-200 rounded-sm absolute top-16 left-[60%]">
                 <p className="text-left mt-10 p-2 px-5 font-semibold">How to cancel a booked event ?</p>
                 <div className=" absolute right-4 bottom-3 h-10 w-10 bg-white rounded-full">
-                  <RiCustomerService2Line className="absolute left-2 top-2 h-6 w-6   " />
+                  <RiCustomerService2Line className="absolute left-2 top-2 h-6 w-6" />
                 </div>
               </div>
               <div className="w-48 h-48 bg-gray-200 rounded-sm absolute top-16 left-[45%]">
                 <p className="text-left mt-10 p-2 px-5 font-semibold">How can get a payment refund ?</p>
                 <div className=" absolute right-4 bottom-3 h-10 w-10 bg-white rounded-full">
-                  <BiCreditCard className="absolute left-2 top-2 h-6 w-6   " />
+                  <BiCreditCard className="absolute left-2 top-2 h-6 w-6" />
                 </div>
               </div>
             </div>
@@ -120,17 +124,15 @@ const ChatBot = () => {
                 <div className="loader">Loading...</div>
               </div>
             )}
-            <div className="space-y-4 ">
+            <div className="space-y-4">
               {responses.map((res, index) => (
                 <div
                   key={index}
-                  className={`p-3  rounded-lg ${res.sender === "user" ? "bg-purple-100 text-right" : "bg-gray-100 "
-                    }`}
+                  className={`p-3 rounded-lg ${res.sender === "user" ? "bg-purple-100 text-right" : "bg-gray-100"}`}
                 >
                   {renderMessage(res.text)}
                 </div>
               ))}
-
             </div>
           </div>
         </div>
@@ -143,7 +145,7 @@ const ChatBot = () => {
           >
             <input
               placeholder="What you want to Ask?"
-              className="flex-grow px-4 py-2  bg-gray-200 rounded-md outline-none "
+              className="flex-grow px-4 py-2 bg-gray-200 rounded-md outline-none"
               value={userInput}
               onChange={handleInputChange}
             />
@@ -152,11 +154,7 @@ const ChatBot = () => {
               disabled={loading}
               className="p-3 bg-purple-600 text-white rounded-full flex items-center justify-center"
             >
-              {loading ? (
-                <span className="loader">...</span>
-              ) : (
-                <FaArrowUp />
-              )}
+              {loading ? <span className="loader">...</span> : <FaArrowUp />}
             </button>
           </form>
         </div>

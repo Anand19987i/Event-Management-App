@@ -304,3 +304,18 @@ export const verifyOtp = async (req, res) => {
         res.status(400).json({ message: 'Invalid or expired token', error });
     }
 }
+
+export const hostData = async (req, res) => {
+    const { hostId } = req.params;
+    try {
+        const hostDetails = await Host.findById({ _id: hostId}).select("allTimeRevenue allTimeTicketSold hostedEvents");
+        res.status(200).json({
+            success: true,
+            hostDetails,
+        })
+
+    } catch (error) {
+        console.error('Not get HostDetails', error);
+        res.status(400).json({ message: 'Not get HostDetails', error });
+    }
+}

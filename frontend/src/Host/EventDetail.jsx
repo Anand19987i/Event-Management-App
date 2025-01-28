@@ -127,7 +127,7 @@ const EventDetail = () => {
                             </div>
                         </div>
                         <div>
-                        <span className='font-bold text-xl p-4'>{ eventDetail.totalSeats - eventDetail.booked.length} Seats Available</span>
+                        <span className='font-bold text-xl p-4'>{ eventDetail.totalSeats - eventDetail.booked?.length} Seats Available</span>
                         </div>
                     </div>
                 </div>

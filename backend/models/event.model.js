@@ -69,7 +69,10 @@ const eventSchema = mongoose.Schema(
         ref: 'User' 
       }
     ],
-    
+    totalRevenue: {
+      type: Number,
+      default: 0,
+    }
   },
   { timestamps: true }
 );

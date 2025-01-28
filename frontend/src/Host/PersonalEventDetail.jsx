@@ -9,7 +9,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { MdDelete } from 'react-icons/md';
 import { PenSquare } from 'lucide-react';
 import HostNav from '@/main/HostNav';
-import clsx from 'clsx';
+
 
 const PersonalEventDetail = () => {
     const { eventDetail, loading, error } = useSelector(store => store.event);
@@ -46,7 +46,6 @@ const PersonalEventDetail = () => {
     const cancelDelete = () => {
         setDeleteModalVisible(false); 
     };
-
     useEffect(() => {
         if (!eventId) {
             console.error('Event ID is missing.');
@@ -80,8 +79,8 @@ const PersonalEventDetail = () => {
         <>
             <HostNav />
             <div className="w-full font-montserrat">
-                <div className="flex flex-col text-start mx-4 md:mx-64 shadow-md">
-                    <img src={eventDetail.eventPoster} alt={eventDetail.eventTitle} className="w-full h-auto shadow-md" />
+                <div className="flex flex-col text-start mx-4 md:mx-64 p-3">
+                    <img src={eventDetail.eventPoster} alt={eventDetail.eventTitle} className="w-full h-96 object-fill rounded-md shadow-md" />
                     <div className="mx-3 mt-4 flex justify-between items-center">
                         <span className="text-3xl font-bold text-gray-800">{eventDetail.eventTitle}</span>
 
@@ -122,7 +121,7 @@ const PersonalEventDetail = () => {
                             </div>
                         </div>
                         <div>
-                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats - eventDetail.booked.length} Seats Available</span>
+                        <span className='font-bold text-xl p-4'>{eventDetail.totalSeats - eventDetail.booked?.length} Seats Available</span>
                         </div>
                         <Link to={`/no-of-bookings/${eventDetail._id}`} className="flex  text-indigo-800 underline p-2">No. of Booking</Link>
                     </div>

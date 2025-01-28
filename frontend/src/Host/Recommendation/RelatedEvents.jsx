@@ -28,12 +28,12 @@ const RelatedEvents = () => {
         };
 
         if (eventDetail?.eventType) getRelatedEvents();
-    }, [eventDetail, eventDetail.eventType]);
+    }, [eventDetail, eventDetail?.eventType]);
 
     return (
         <div className="p-6">
             <h1 className="text-2xl font-semibold mb-6">
-                Related Events
+                You may also like
             </h1>
 
             {loading ? (
@@ -46,15 +46,23 @@ const RelatedEvents = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {relatedEvents.map((event) => (
                         <Link
-                            key={event._id}
-                            to={`/details/${event.eventTitle}/${event._id}`}
+                            key={event?._id}
+                            to={`/details/${event?.eventTitle}/${event?._id}`}
                             className="group"
                         >
                             <img
-                                src={event.eventPoster}
-                                alt={event.eventTitle}
+                                src={event?.eventPoster}
+                                alt={event?.eventTitle}
                                 className="w-full h-40 object-cover rounded-lg shadow-md transition-transform transform group-hover:scale-105"
                             />
+                            {
+                                event?.eventTitle?.length <= 16 ? (
+                                    <p className='font-semibold'>{event?.eventTitle?.slice(0, 16)}</p>
+                                ) : (
+                                    <p className='font-semibold'>{event?.eventTitle?.slice(0, 16)}...</p>
+                                )
+
+                            }
                         </Link>
                     ))}
                 </div>

@@ -1,5 +1,5 @@
 import express from "express";
-import { AiIntegration, bookEvent, checkBookingStatus, createEvent, deleteEvent, editUserEvent, fetchBookedEvents, fetchUserWhoBookedEvent, getAllEvents, getEventDetails, getRecommendEventDetails, getRelatedEvents, getUserEvents, recommendation } from "../controllers/event.controller.js";
+import { AiIntegration, bookEvent, checkBookingStatus, createEvent, dashboard, deleteEvent, editUserEvent, fetchBookedEvents, fetchUserWhoBookedEvent, getAllEvents, getEventDetails, getRecommendEventDetails, getRelatedEvents, getUserEvents, recommendation, searchEvents } from "../controllers/event.controller.js";
 import {singleUpload, Uploads } from "../middlewares/multer.js";
 
 const router = express();
@@ -18,5 +18,7 @@ router.route("/events/recommendation/:userId").post(recommendation);
 router.route("/recommend/detail/:userId").get(getRecommendEventDetails);
 router.route("/no-of-bookings/:eventId").get(fetchUserWhoBookedEvent);
 router.route("/related/events/:eventType").get(getRelatedEvents);
+router.route("/search/query/:query").get(searchEvents);
+router.route("/dashboard/:hostId").get(dashboard);
 
 export default router;

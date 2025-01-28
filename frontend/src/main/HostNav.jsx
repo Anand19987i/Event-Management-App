@@ -44,9 +44,10 @@ const HostNav = () => {
       <div className="flex items-center gap-5">
         {
           host ? <div className="flex items-center gap-1">
-            <div className='flex gap-3'>
+            <div className='flex gap-5 absolute left-1/4'>
+              <Link to={`/dashboard/${host._id}`} className='text-sm font-semibold'>Dashboard</Link>
               <Link to={`/list/events/${host._id}`} className='text-sm font-semibold'>List Your Events</Link>
-              <Link to="/create/v1/posters-and-thumbnails" className='text-sm font-semibold'>Design Thumbnails</Link>
+              <Link to="/create/v1/posters-and-thumbnails" className='text-sm font-semibold'>Design Posters</Link>
             </div>
             <img
               src={userDetail?.avatar || "/default-pic.avif"}

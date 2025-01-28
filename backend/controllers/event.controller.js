@@ -9,6 +9,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 import { User } from '../models/user.model.js';
 import * as tf from '@tensorflow/tfjs';  // Use tfjs-node for Node.js environment
 import { UserEventInteraction } from '../models/recommendation.model.js';
+import { Host } from '../models/host.model.js';
 dotenv.config();
 
 export const createEvent = async (req, res) => {
@@ -35,7 +36,11 @@ export const createEvent = async (req, res) => {
       endTimePeriod,
       totalSeats,
     });
-
+    await Host.findByIdAndUpdate(
+      hostId,
+      { $push: { hostedEvents: newEvent._id } },
+      { new: true, useFindAndModify: false }
+    );
     return res.status(201).json({
       message: 'Event created successfully',
       success: true,
@@ -153,19 +158,20 @@ export const deleteEvent = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 }
+
 export const bookEvent = async (req, res) => {
   try {
-    const { userId } = req.body; // userId should be a string.
-    const { eventId } = req.params;
+    const { userId } = req.body; // Extract userId from the request body
+    const { eventId } = req.params; // Extract eventId from the URL parameters
 
-    // Fetch the event by ID
-    const event = await Event.findById(eventId);
+    // Fetch the event by ID and populate the host details
+    const event = await Event.findById(eventId).populate("hostId");
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
 
     // Check if the event is fully booked
-    if (event.booked.length >= event.maxCapacity) {
+    if (event.booked.length >= event.totalSeats) {
       return res.status(400).json({ message: "Event is fully booked." });
     }
 
@@ -174,12 +180,23 @@ export const bookEvent = async (req, res) => {
       return res.status(400).json({ message: "You have already booked this event." });
     }
 
-    // Add the userId to the event's booked array
+    // Add ticket price to event total revenue and user to the booked array
+    event.totalRevenue += event.ticketPrice;
     event.booked.push(userId);
     await event.save();
 
-    // Fetch the user and add the eventId to their bookedEvents array
-    const user = await User.findById(userId); // Fetch user using userId directly.
+    // Update host's allTimeRevenue and allTimeTicketSold
+    const host = event.hostId; // Host details populated from Event
+    if (!host) {
+      return res.status(404).json({ message: "Host not found." });
+    }
+
+    host.allTimeRevenue += event.ticketPrice; // Update all-time revenue
+    host.allTimeTicketSold += 1; // Increment all-time ticket sold count
+    await host.save();
+
+    // Fetch the user by ID and add the event to their bookedEvents array
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -187,13 +204,18 @@ export const bookEvent = async (req, res) => {
     user.bookedEvents.push(eventId);
     await user.save();
 
-    return res.status(200).json({ success: true, message: "Event booked successfully!" });
+    return res.status(200).json({
+      success: true,
+      message: "Event booked successfully!",
+    });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "An error occurred while booking the event." });
+    return res.status(500).json({
+      message: "An error occurred while booking the event.",
+      success: false,
+    });
   }
 };
-
 
 export const checkBookingStatus = async (req, res) => {
   try {
@@ -388,3 +410,50 @@ export const getRelatedEvents = async (req, res) => {
     });
   }
 }
+
+export const searchEvents = async (req, res) => {
+  try {
+    const query = req.params.query;
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required." });
+    }
+    const keywords = query.split(" ");
+
+    const searchConditions = keywords.map((keyword) => ({
+      $or: [
+        { eventTitle: { $regex: keyword, $options: "i" } },
+        { eventDescription: { $regex: keyword, $options: "i" } },
+        { eventType: { $regex: keyword, $options: "i" } },
+        { eventLocation: { $regex: keyword, $options: "i" } },
+        { state: { $regex: keyword, $options: "i" } },
+      ],
+    }));
+    const results = await Event.find({ $and: searchConditions });
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error searching events:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const dashboard = async (req, res) => {
+  try {
+    const { hostId } = req.params;
+    const events = await Event.find({ hostId }).select('eventTitle ticketPrice state eventDate eventLocation eventType totalSeats booked');
+    if (!hostId) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found"
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      events,
+    })
+  } catch (error) {
+    console.error("Error in get events data:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+

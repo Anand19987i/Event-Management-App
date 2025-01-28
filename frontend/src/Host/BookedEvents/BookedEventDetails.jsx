@@ -50,12 +50,12 @@ const BookedEventDetails = () => {
         <>
             <Navbar />
             <div className="w-full font-montserrat">
-                <div className="flex flex-col text-start mx-4 sm:mx-8 md:mx-32 lg:mx-64 shadow-md">
+                <div className="flex flex-col text-start mx-4 sm:mx-8 md:mx-32 lg:mx-64  p-3">
                     {/* Event Image */}
                     <img
                         src={eventDetail.eventPoster}
                         alt={eventDetail.eventTitle}
-                        className="w-full h-auto rounded-lg shadow-md"
+                        className="w-full h-96 object-fill rounded-md shadow-md"
                     />
 
                     {/* Event Title and Book Button */}
@@ -117,7 +117,7 @@ const BookedEventDetails = () => {
                         </div>
                         <div className="mt-4 sm:mt-0">
                             <span className="font-bold text-lg sm:text-xl p-4">
-                                {eventDetail.totalSeats - eventDetail.booked.length} Seats Available
+                                {eventDetail.totalSeats - eventDetail.booked?.length} Seats Available
                             </span>
                         </div>
                     </div>

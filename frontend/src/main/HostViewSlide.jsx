@@ -56,16 +56,6 @@ const HostViewSlide = () => {
                 </div>
             </div>
             </Link>
-            <Link to={`/ai/generate`}> <div className='border-b gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
-                <div className="flex justify-start items-center gap-3 ">
-                    <TbSettingsAutomation className='w-4 h-4' />
-                    <span className='text-lg'>Automate Your Content</span>
-                </div>
-                <div>
-                    <p className='text-sm pl-7 text-gray-500'>Generate description through an AI</p>
-                </div>
-            </div>
-            </Link>
             <div className='border-b flex items-center justify-start gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
                 <LogOut className='w-4 h-4' />
                 <span className='text-lg text-red-500' onClick={Logout}>Sign Out</span>

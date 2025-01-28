@@ -23,6 +23,8 @@ import HostMain from './main/HostMain'
 import EditHostProfile from './main/EditHostProfile'
 import SpecialEvent from './components/SpecialEvent'
 import BookedEventDetail from './main/BookedEventDetail'
+import SearchResults from './components/SearchResults'
+import Dashboard from './main/Dashboard'
 
 const App = () => {
   const appRouter = createBrowserRouter([
@@ -106,6 +108,14 @@ const App = () => {
       path: "/no-of-bookings/:id",
       element: <BookedEventDetail/>
     },
+    {
+      path: "/search",
+      element: <SearchResults />
+    },
+    {
+      path: "/dashboard/:id",
+      element: <Dashboard />
+    }
   ])
   return (
     <div>

@@ -298,7 +298,7 @@ const CreateEvent = () => {
           {loading ? (
             <button
               type="submit"
-              className="bg-purple-800 text-white py-3 px-6 rounded-2xl mx-auto my-5 flex items-center justify-center"
+              className="bg-indigo-700 text-white py-3 px-6 rounded-2xl mx-auto my-5 flex items-center justify-center"
             >
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Please Wait
@@ -306,7 +306,7 @@ const CreateEvent = () => {
           ) : (
             <button
               type="submit"
-              className=" flex bg-purple-800 text-white px-6 py-3 rounded-2xl mx-auto my-5  "
+              className=" flex bg-indigo-700 text-white px-6 py-3 rounded-2xl mx-auto my-5  "
             >
               Host Now
             </button>
