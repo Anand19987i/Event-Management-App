@@ -41,7 +41,7 @@ const BookedEvents = () => {
                         <p className="text-xl font-medium text-center w-full">No events available</p>
                     ) : (
                         bookedEvents.map((event, idx) => (
-                                <BookedEventCard event={event} key={event._id} />
+                                <BookedEventCard event={event} key={idx} />
                         ))
                     )}
                 </div>

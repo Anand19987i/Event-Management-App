@@ -25,6 +25,8 @@ import SpecialEvent from './components/SpecialEvent'
 import BookedEventDetail from './main/BookedEventDetail'
 import SearchResults from './components/SearchResults'
 import Dashboard from './main/Dashboard'
+import SeatSelection from './main/SeatSelection'
+import Success from './main/Success'
 
 const App = () => {
   const appRouter = createBrowserRouter([
@@ -89,7 +91,7 @@ const App = () => {
       element: <BookedEvents />
     },
     {
-      path: "/booked/event/details/:eventTitle/:eventId",
+      path: "/booked/event/details/:eventId",
       element: <BookedEventDetails />
     },
     {
@@ -115,6 +117,14 @@ const App = () => {
     {
       path: "/dashboard/:id",
       element: <Dashboard />
+    }, 
+    {
+      path: "/seat-selection/:id",
+      element: <SeatSelection />
+    },
+    {
+      path: "/success",
+      element: <Success />
     }
   ])
   return (

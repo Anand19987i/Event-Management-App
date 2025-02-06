@@ -8,11 +8,8 @@ const BookedEventCard = ({ event }) => {
       {/* Card Container */}
       <div className="group flex flex-col w-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white cursor-pointer mb-10">
         {/* Event Thumbnail */}
-        <Link
-          to={`/booked/event/details/${event.eventTitle
-            ?.replace(/\s+/g, "-")
-            .toLowerCase()}/${event?._id}`}
-        >
+        <Link to={`/booked/event/details/${event._id}`}>
+
           <img
             src={event.eventPoster}
             alt={event.eventTitle}

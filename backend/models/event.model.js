@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const eventSchema = mongoose.Schema(
   {
     hostId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Host',
+      ref: "Host",
       required: true,
     },
     eventPoster: {
@@ -28,7 +28,7 @@ const eventSchema = mongoose.Schema(
       required: true,
     },
     ticketPrice: {
-      type: String,
+      type: Number, // Changed from String to Number
       required: true,
     },
     eventDate: {
@@ -60,22 +60,25 @@ const eventSchema = mongoose.Schema(
       required: true,
     },
     totalSeats: {
-      type : Number,
+      type: Number,
       required: true,
     },
+    bookedSeats: {
+      type: [Number], // Stores seat numbers instead of user IDs
+      default: [],
+    },
     booked: [
-      { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
-      }
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Store user who booked
+        seats: [Number], 
+      },
     ],
     totalRevenue: {
       type: Number,
       default: 0,
-    }
+    },
   },
   { timestamps: true }
 );
 
-
-export const Event = mongoose.model('Event', eventSchema);
+export const Event = mongoose.model("Event", eventSchema);

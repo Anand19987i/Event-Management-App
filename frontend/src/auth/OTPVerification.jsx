@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { USER_API_END_POINT } from '@/utils/constant';
 import { Loader2 } from 'lucide-react';
@@ -16,9 +16,38 @@ const OTPVerification = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const { user } = useSelector(store => store.auth);
+    const inputRefs = useRef([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const handleOtpChange = (index, value) => {
+        if (!/^\d*$/.test(value)) return;
+        const newOtp = otp.split('');
+        newOtp[index] = value;
+        const joinedOtp = newOtp.join('');
+        setOtp(joinedOtp);
+
+        if (value && index < 5) {
+            inputRefs.current[index + 1].focus();
+        }
+    };
+
+    const handleKeyDown = (index, e) => {
+        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+            inputRefs.current[index - 1].focus();
+        }
+    };
+
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text/plain').slice(0, 6).replace(/\D/g, '');
+        const newOtp = pastedData.padEnd(6, ' ').split('').slice(0, 6);
+        setOtp(newOtp.join(''));
+        if (pastedData.length === 6) {
+            inputRefs.current[5].focus();
+        }
+    };
 
     const sendOtp = async () => {
         setSendLoading(true);
@@ -26,15 +55,13 @@ const OTPVerification = () => {
         setSuccessMessage('');
         try {
             const response = await axios.post(`${USER_API_END_POINT}/send-otp`, { email }, {
-                header: {
-                    'Content-Type': 'application/json',
-                }, withCredentials: true,
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true,
             });
             setToken(response.data.token);
-            setSuccessMessage('Please check your email inbox!!');
+            setSuccessMessage('OTP sent to your email!');
             setSuccess(true);
         } catch (error) {
-            console.log(error)
             setErrorMessage('Email is not registered');
         } finally {
             setSendLoading(false);
@@ -42,16 +69,16 @@ const OTPVerification = () => {
     };
 
     const verifyOtp = async () => {
+        if (otp.length !== 6) {
+            setErrorMessage('Please enter a 6-digit OTP');
+            return;
+        }
         setVerifyLoading(true);
         setErrorMessage('');
-        setSuccessMessage('');
         try {
             const response = await axios.post(`${USER_API_END_POINT}/verify-otp`, { otp, token, email });
-            if (response.data.success) {
-                dispatch(setUser(response.data.user));
-                navigate("/");
-            }
-            setSuccessMessage(response.data.message);
+            dispatch(setUser(response.data.user));
+            navigate("/");
         } catch (error) {
             setErrorMessage('Invalid OTP');
         } finally {
@@ -60,81 +87,79 @@ const OTPVerification = () => {
     };
 
     return (
-        <div
-            className="min-h-screen flex items-center justify-center bg-cover bg-center"
-            style={{ backgroundImage: "url('https://source.unsplash.com/random/1920x1080?otp-verification')" }}
-        >
-            <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl max-w-md w-full">
-                <h1 className="text-2xl font-bold mb-4">
-                    Sign in to <span className="text-purple-600">Eventify</span>
-                </h1>
-                <p className="text-sm font-medium mb-2">
-                    Don't have an account?{" "}
-                    <span className="underline cursor-pointer text-purple-600">
-                        <Link to="/signup">Sign up</Link>
-                    </span>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full mx-4">
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        OTP Verification
+                    </h1>
+                    <p className="text-gray-600">
+                        {success ? 'Enter the code sent to your email' : 'Enter your email to receive the OTP'}
+                    </p>
+                </div>
+
+                {errorMessage && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">{errorMessage}</div>}
+                {successMessage && <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-lg">{successMessage}</div>}
+
+                {!success ? (
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                placeholder="example@email.com"
+                            />
+                        </div>
+                        <button
+                            onClick={sendOtp}
+                            disabled={sendLoading || !email}
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {sendLoading ? (
+                                <Loader2 className="animate-spin mx-auto h-6 w-6" />
+                            ) : 'Send OTP'}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        <div className="flex gap-2 justify-center mb-8">
+                            {[...Array(6)].map((_, index) => (
+                                <input
+                                    key={index}
+                                    type="text"
+                                    maxLength="1"
+                                    value={otp[index] || ''}
+                                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                                    onKeyDown={(e) => handleKeyDown(index, e)}
+                                    onPaste={handlePaste}
+                                    ref={(el) => (inputRefs.current[index] = el)}
+                                    className="w-12 h-16 border-2 border-gray-200 rounded-xl text-center text-2xl font-semibold focus:border-purple-600 focus:outline-none"
+                                />
+                            ))}
+                        </div>
+                        <button
+                            onClick={verifyOtp}
+                            disabled={verifyLoading || otp.length !== 6}
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {verifyLoading ? (
+                                <Loader2 className="animate-spin mx-auto h-6 w-6" />
+                            ) : 'Verify OTP'}
+                        </button>
+                    </div>
+                )}
+
+                <p className="text-center mt-6 text-sm text-gray-600">
+                    Remember your password?{' '}
+                    <Link to="/login" className="text-purple-600 hover:underline font-medium">
+                        Sign in
+                    </Link>
                 </p>
-                {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
-                {successMessage && <p className="text-black font-semibold mb-4">{successMessage}</p>}
-
-                <div className="flex flex-col mb-4">
-                    <label className="mb-2 text-gray-700">
-                        Email <span className="text-red-600">*</span>
-                    </label>
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        name='email'
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
-                    />
-                </div>
-
-                <button
-                    onClick={sendOtp}
-                    className="bg-purple-800 text-white py-3 px-6 rounded-2xl mx-auto my-5 w-full flex items-center justify-center"
-                    disabled={sendLoading}
-                >
-                    {sendLoading ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Sending...
-                        </>
-                    ) : (
-                        'Send OTP'
-                    )}
-                </button>
-
-                <div className={`${success? 'flex flex-col mb-4' : 'hidden'}`}>
-                    <label className="mb-2 text-gray-700">
-                        OTP <span className="text-red-600">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        required
-                        className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
-                    />
-                </div>
-
-                <button
-                    onClick={verifyOtp}
-                    className={`${success ? 'bg-purple-800 text-white py-3 px-6 rounded-2xl mx-auto my-5 w-full flex items-center justify-center' : 'hidden'}`}
-                    disabled={verifyLoading}
-                >
-                    {verifyLoading ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Verifying...
-                        </>
-                    ) : (
-                        'Verify OTP'
-                    )}
-                </button>
             </div>
         </div>
     );

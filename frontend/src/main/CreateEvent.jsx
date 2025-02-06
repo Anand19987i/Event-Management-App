@@ -95,7 +95,7 @@ const CreateEvent = () => {
       data.append('totalSeats', formData.totalSeats);
 
       const response = await axios.post(
-        `${EVENT_API_END_POINT}/host/event/${host._id}`,
+        `${EVENT_API_END_POINT}/host/event/${host?._id}`,
         data,
         {
           headers: {
@@ -107,7 +107,7 @@ const CreateEvent = () => {
 
       if (response.data.success) {
         dispatch(setLoading(false));
-        navigate("/host/main");
+        navigate(`/list/events/${host._id}`);
       }
       console.log('Event created:', response.data);
     } catch (error) {

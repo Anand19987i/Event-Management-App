@@ -85,10 +85,10 @@ const BookedEventDetail = () => {
                 <tbody>
                   {bookedUsers.map((user) => (
                     <tr key={user._id} className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 border-b border-gray-200">{user.firstname}</td>
-                      <td className="px-6 py-4 border-b border-gray-200">{user.lastname}</td>
-                      <td className="px-6 py-4 border-b border-gray-200">{user.email}</td>
-                      <td className="px-6 py-4 border-b border-gray-200">{user.mobile}</td>
+                      <td className="px-6 py-4 border-b border-gray-200">{user?.userId?.firstname}</td>
+                      <td className="px-6 py-4 border-b border-gray-200">{user?.userId?.lastname}</td>
+                      <td className="px-6 py-4 border-b border-gray-200">{user?.userId?.email}</td>
+                      <td className="px-6 py-4 border-b border-gray-200">{user?.userId?.mobile}</td>
                     </tr>
                   ))}
                 </tbody>

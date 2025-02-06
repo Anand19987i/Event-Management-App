@@ -8,25 +8,25 @@ import Navbar from '@/components/Navbar';
 import { FaLocationDot } from "react-icons/fa6";
 
 const BookedEventDetails = () => {
-    const { eventDetail, checkBooked, loading, error } = useSelector(store => store.event);
     const dispatch = useDispatch();
-    const { eventTitle, eventId } = useParams();
+    const { eventId } = useParams(); // Use eventId from URL
+    const { eventDetail, loading, error } = useSelector(store => store.event);
+    const [cancelLoading, setCancelLoading] = useState(false);
+    const [cancelError, setCancelError] = useState(null);
+    const { user } = useSelector(store => store.auth);
 
     const formatEventDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         const date = new Date(dateString);
         return date.toLocaleDateString('en-GB', options);
     };
-
     useEffect(() => {
-        if (!eventId) {
-            console.error('Event ID is missing.');
-            return;
-        }
+        dispatch(setEventDetail(null)); // Reset previous state
+        if (!eventId) return;
 
         const fetchEventDetails = async () => {
             try {
-                const response = await axios.get(`${EVENT_API_END_POINT}/details/${eventTitle}/${eventId}`, {
+                const response = await axios.get(`${EVENT_API_END_POINT}/details/${eventId}`, {
                     withCredentials: true,
                 });
 
@@ -41,37 +41,71 @@ const BookedEventDetails = () => {
         };
 
         fetchEventDetails();
-    }, [eventId, dispatch]);
+    }, [eventId, dispatch]); // Dependency updated
+
+    console.log(eventDetail);
+    const cancelBooking = async () => {
+        if (!eventId || !user?._id) {
+            setCancelError("Invalid request: Missing event or user.");
+            return;
+        }
+
+        setCancelLoading(true);
+        setCancelError(null);
+
+        try {
+            const response = await axios.post(
+                ` ${EVENT_API_END_POINT}/cancel-booking/${eventId}`,
+                {
+                    userId: user?._id,
+                    selectedSeats: eventDetail?.bookedSeats || [],
+                },
+                { withCredentials: true }
+            );
+
+            if (response.data.success) {
+                alert("Booking canceled successfully!");
+                dispatch(setEventDetail(response.data.updatedEvent)); // Update Redux state
+            } else {
+                setCancelError(response.data.message || "Failed to cancel booking.");
+            }
+        } catch (error) {
+            setCancelError("An error occurred while canceling the booking.");
+        } finally {
+            setCancelLoading(false);
+        }
+    };
 
     if (loading) return <div className="text-center text-xl">Loading event details...</div>;
     if (error) return <div className="text-center text-xl text-red-600">Error: {error}</div>;
+    if (!eventDetail) return <div className="text-center text-xl">No event details available.</div>;
+
 
     return (
         <>
             <Navbar />
             <div className="w-full font-montserrat">
-                <div className="flex flex-col text-start mx-4 sm:mx-8 md:mx-32 lg:mx-64  p-3">
+                <div className="flex flex-col text-start mx-4 sm:mx-8 md:mx-32 lg:mx-64 p-3">
                     {/* Event Image */}
                     <img
-                        src={eventDetail.eventPoster}
-                        alt={eventDetail.eventTitle}
+                        src={eventDetail?.eventPoster}
+                        alt={eventDetail?.eventTitle}
                         className="w-full h-96 object-fill rounded-md shadow-md"
                     />
 
                     {/* Event Title and Book Button */}
                     <div className="mx-3 mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
                         <span className="text-2xl md:text-3xl font-bold text-gray-800 text-center sm:text-start">
-                            {eventDetail.eventTitle}
+                            {eventDetail?.eventTitle}
                         </span>
-                        {checkBooked ? (
-                            <button className="text-white px-6 py-3 mt-2 sm:mt-0 font-semibold rounded bg-gray-600 hover:bg-gray-800 transition duration-300">
-                                Booked
-                            </button>
-                        ) : (
-                            <button className="text-white px-6 py-3 mt-2 sm:mt-0 font-semibold rounded bg-pink-600 hover:bg-pink-700 transition duration-300">
-                                Book
-                            </button>
-                        )}
+                        <button
+                            onClick={cancelBooking}
+                            disabled={cancelLoading}
+                            className="text-white px-6 py-3 mt-2 sm:mt-0 font-semibold rounded bg-red-600 hover:bg-red-700 transition duration-300"
+                        >
+                            {cancelLoading ? 'Canceling...' : 'Cancel Booking'}
+                        </button>
+
                     </div>
 
                     {/* Event Details */}
@@ -94,7 +128,7 @@ const BookedEventDetails = () => {
                         <span>{eventDetail.state}</span>
                         <span>|</span>
                         <span className="font-semibold">
-                            {eventDetail.ticketPrice} <span className="text-sm">onwards</span>
+                            ₹ {eventDetail.ticketPrice} <span className="text-sm">onwards</span>
                         </span>
                     </div>
 

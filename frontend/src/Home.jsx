@@ -9,6 +9,7 @@ import axios from 'axios';
 import { USER_API_END_POINT } from './utils/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateFirstTimeStatus } from './redux/authSlice';
+import Footer from './components/Footer';
 
 const Home = () => {
   const { user, isFirstTime } = useSelector(store => store.auth);
@@ -88,6 +89,7 @@ const Home = () => {
           key={Date.now()}
         />
       )}
+      <Footer/>
     </div>
   );
 };
