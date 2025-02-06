@@ -6,7 +6,7 @@ import RecommendationModel from './Host/Recommendation/RecommendationModel';
 import RegisterPopup from './components/RegisterPopup';
 import EventSuggestion from '../src/components/EventSuggetion/EventSuggestion';
 import axios from 'axios';
-import { USER_API_END_POINT } from './utils/constant';
+import { USER_API_END_POINT } from '@/utils/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateFirstTimeStatus } from './redux/authSlice';
 import Footer from './components/Footer';
