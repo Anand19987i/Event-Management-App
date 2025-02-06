@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { FaArrowUp, FaInbox, FaCopy } from "react-icons/fa6";
-import { Loader2 } from "lucide-react";
-import { BiDetail } from "react-icons/bi";
-import Navbar from "../components/Navbar";
 import MenuBar from "./MenuBar";
 import { EVENT_API_END_POINT } from "@/utils/constant";
 import ReactMarkdown from "react-markdown";
