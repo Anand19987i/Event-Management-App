@@ -4,8 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { EVENT_API_END_POINT } from '@/utils/constant';
 import Navbar from '@/components/Navbar';
-import dotenv from "dotenv";
-dotenv.config();
+
 
 const SeatSelection = () => {
     const { eventDetail } = useSelector(store => store.event);
