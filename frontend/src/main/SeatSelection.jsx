@@ -2,8 +2,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { EVENT_API_END_POINT, RAZORPAY_KEY_ID } from '@/utils/constant';
+import { EVENT_API_END_POINT } from '@/utils/constant';
 import Navbar from '@/components/Navbar';
+import dotenv from "dotenv";
+dotenv.config();
 
 const SeatSelection = () => {
     const { eventDetail } = useSelector(store => store.event);
@@ -54,7 +56,7 @@ const SeatSelection = () => {
             });
 
             const options = {
-                key: RAZORPAY_KEY_ID,
+                key: process.env.RAZORPAY_KEY_ID,
                 amount: data.order.amount,
                 currency: "INR",
                 name: `${eventDetail?.eventTitle} Seat Booking`,
