@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { HOST_API_END_POINT, USER_API_END_POINT } from "../utils/constant";
-import { setLoading, setUserDetail } from "../redux/authSlice";
+import { HOST_API_END_POINT, USER_API_END_POINT } from "@/utils/constant";
+import { setLoading, setUserDetail } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import HostNav from "./HostNav";

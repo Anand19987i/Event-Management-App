@@ -1,13 +1,10 @@
 import { setLoading } from '@/redux/authSlice';
-import { setUserEvents } from '../redux/eventSlice';
-import { EVENT_API_END_POINT } from '../utils/constant';
+import { setUserEvents } from '@/redux/eventSlice';
+import { EVENT_API_END_POINT } from '@/utils/constant';
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom';
 import PersonalEventCard from './PersonalEventCard';
-import MenuBar from './MenuBar';
-import Navbar from '../components/Navbar';
 import HostNav from '@/main/HostNav';
 
 const PersonalHostedEvents = () => {

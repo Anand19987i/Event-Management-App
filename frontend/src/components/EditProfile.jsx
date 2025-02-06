@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { USER_API_END_POINT } from "../utils/constant";
-import { setLoading, setUserDetail } from "../redux/authSlice";
+import { USER_API_END_POINT } from "@/utils/constant";
+import { setLoading, setUserDetail } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

@@ -1,10 +1,10 @@
 import Navbar from '../components/Navbar';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { EVENT_API_END_POINT } from '../utils/constant';
+import { EVENT_API_END_POINT } from '@/utils/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { setLoading } from '../redux/eventSlice';
+import { setLoading } from '@/redux/eventSlice';
 import { Loader2 } from 'lucide-react';
 import MenuBar from './MenuBar';
 import HostNav from '@/main/HostNav';

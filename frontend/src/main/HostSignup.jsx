@@ -1,5 +1,5 @@
-import { HOST_API_END_POINT, USER_API_END_POINT } from "../utils/constant";
-import { setLoading } from "../redux/authSlice";
+import { HOST_API_END_POINT, USER_API_END_POINT } from "@/utils/constant";
+import { setLoading } from "@/redux/authSlice";
 import { EyeIcon, EyeOff, Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

@@ -2,8 +2,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { EVENT_API_END_POINT, RAZORPAY_KEY_ID } from '../utils/constant';
-import Navbar from '../components/Navbar';
+import { EVENT_API_END_POINT, RAZORPAY_KEY_ID } from '@/utils/constant';
+import Navbar from '@/components/Navbar';
 
 const SeatSelection = () => {
     const { eventDetail } = useSelector(store => store.event);

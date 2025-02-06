@@ -3,8 +3,8 @@ import { EyeIcon, EyeOff, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { HOST_API_END_POINT } from "../utils/constant";
-import { setHost, setLoading, setToken, setUser } from "../redux/authSlice";
+import { HOST_API_END_POINT } from "@/utils/constant";
+import { setHost, setLoading, setToken, setUser } from "@/redux/authSlice";
 
 const HostLogin = () => {
   const [icon, setIcon] = useState(EyeOff);

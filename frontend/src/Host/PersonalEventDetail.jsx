@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { setEventDetail, setEventId } from '../redux/eventSlice';
+import { setEventDetail, setEventId } from '@/redux/eventSlice';
 import axios from 'axios';
-import { EVENT_API_END_POINT } from '../utils/constant';
-import Navbar from '../components/Navbar';
+import { EVENT_API_END_POINT } from '@/utils/constant';
+import Navbar from '@/components/Navbar';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdDelete } from 'react-icons/md';
 import { PenSquare } from 'lucide-react';

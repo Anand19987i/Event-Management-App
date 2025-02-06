@@ -4,7 +4,7 @@ import Herosection from './components/Herosection';
 import ViewEvent from './Host/ViewEvent';
 import RecommendationModel from './Host/Recommendation/RecommendationModel';
 import RegisterPopup from './components/RegisterPopup';
-import EventSuggestion from '../src/components/EventSuggetion/EventSuggestion';
+import EventSuggestion from '@/components/EventSuggetion/EventSuggestion';
 import axios from 'axios';
 import { USER_API_END_POINT } from '@/utils/constant';
 import { useDispatch, useSelector } from 'react-redux';

@@ -3,10 +3,9 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbBrandBooking } from "react-icons/tb";
-import { MdEventAvailable } from "react-icons/md";
 import axios from 'axios';
-import { USER_API_END_POINT } from '../utils/constant';
-import { setToken, setUser, setUserDetail } from '../redux/authSlice';
+import { USER_API_END_POINT } from '@/utils/constant';
+import { setToken, setUser, setUserDetail } from '@/redux/authSlice';
 import { TbSettingsAutomation } from "react-icons/tb";
 
 const ViewSlide = () => {
