@@ -4,7 +4,6 @@ import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
-import MenuBar from '../MenuBar';
 import Navbar from '@/components/Navbar';
 import {  setBookedEvents } from '@/redux/eventSlice';
 import BookedEventCard from './BookedEventCard';
