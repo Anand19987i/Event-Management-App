@@ -4,20 +4,21 @@ import { createServer } from "http";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-import userRoute from  "./routes/user.route.js";
-import hostRoute from  "./routes/host.route.js";
-import eventRoute from  "./routes/event.route.js";
+import userRoute from "./routes/user.route.js";
+import hostRoute from "./routes/host.route.js";
+import eventRoute from "./routes/event.route.js";
 import chatBotRoute from "./routes/chatbot.route.js";
 
 dotenv.config({});
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOption = {
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
+    origin: "https://eventify-7ojp.onrender.com",
     credentials: true,
 }
 
@@ -28,7 +29,7 @@ app.use("/api/v1/host", hostRoute);
 app.use("/api/v1/event", eventRoute);
 app.use("/api/v1/chatbot", chatBotRoute);
 
-const port = process.env.PORT || 4000; 
+const port = process.env.PORT || 4000;
 
 const server = createServer(app);
 
