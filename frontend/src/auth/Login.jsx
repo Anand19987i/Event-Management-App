@@ -3,7 +3,7 @@ import { EyeIcon, EyeOff, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { USER_API_END_POINT } from "../utils/constant";
+import { USER_API_END_POINT } from "@/utils/constant";
 import { setLoading, setToken, setUser } from "../redux/authSlice";
 
 const Login = () => {
