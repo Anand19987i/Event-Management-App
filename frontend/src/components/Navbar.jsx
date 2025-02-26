@@ -97,7 +97,7 @@ const Navbar = () => {
             {viewProfile && (
               <div
                 ref={dropdownRef}
-                className="absolute top-12 -right-10 w-80 bg-white shadow-lg rounded-lg p-4 transition-all duration-200 ease-in-out z-50"
+                className="absolute top-12 -right-20 w-80 bg-white shadow-lg rounded-lg p-4 transition-all duration-200 ease-in-out z-50"
               >
                 <ViewSlide />
               </div>

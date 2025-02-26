@@ -50,7 +50,7 @@ const HostNav = () => {
       </div>
 
       {/* User Profile / Login Options */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 z-100">
         {host ? (
           <div className="relative flex items-center gap-2">
             {/* Profile Image */}
@@ -89,7 +89,7 @@ const HostNav = () => {
 
       {/* Mobile Dropdown Menu */}
       <div
-        className={`lg:hidden absolute top-16 left-0 w-full bg-white shadow-md py-4 px-6 transition-all duration-300 ${
+        className={`lg:hidden absolute top-16 left-0 w-full bg-white shadow-md py-4 px-6 transition-all duration-300 z-50 ${
           menuOpen ? "block" : "hidden"
         }`}
       >

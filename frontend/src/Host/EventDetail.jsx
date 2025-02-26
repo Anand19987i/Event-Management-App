@@ -102,7 +102,7 @@ const EventDetail = () => {
                         </div>
                         <div className="w-full md:w-1/3 mt-4 md:mt-0 text-center md:text-end">
                             <span className="font-bold text-lg p-4 bg-gray-100 rounded-lg shadow-md">
-                                🎟 {eventDetail.totalSeats - eventDetail.bookedSeats.length} Seats Available
+                                🎟 {eventDetail.totalSeats - eventDetail.bookedSeats?.length} Seats Available
                             </span>
                         </div>
                     </div>
