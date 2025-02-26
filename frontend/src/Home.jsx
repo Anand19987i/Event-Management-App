@@ -79,7 +79,7 @@ const Home = () => {
       <Navbar />
       <Herosection />
       <ViewEvent />
-      <RecommendationModel />
+      
 
       {showPopup && <RegisterPopup onClose={() => setShowPopup(false)} />}
       {showEventSuggestion && (

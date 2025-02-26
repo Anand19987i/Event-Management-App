@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { USER_API_END_POINT } from '@/utils/constant';
 import { Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { setUser } from '@/redux/authSlice';
 
 const OTPVerification = () => {
@@ -15,11 +15,17 @@ const OTPVerification = () => {
     const [verifyLoading, setVerifyLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const { user } = useSelector(store => store.auth);
     const inputRefs = useRef([]);
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Retrieve email from location state (if redirected from Forgot Password)
+    useEffect(() => {
+        if (location.state?.email) {
+            setEmail(location.state.email);
+        }
+    }, [location]);
 
     const handleOtpChange = (index, value) => {
         if (!/^\d*$/.test(value)) return;
@@ -36,16 +42,6 @@ const OTPVerification = () => {
     const handleKeyDown = (index, e) => {
         if (e.key === 'Backspace' && !otp[index] && index > 0) {
             inputRefs.current[index - 1].focus();
-        }
-    };
-
-    const handlePaste = (e) => {
-        e.preventDefault();
-        const pastedData = e.clipboardData.getData('text/plain').slice(0, 6).replace(/\D/g, '');
-        const newOtp = pastedData.padEnd(6, ' ').split('').slice(0, 6);
-        setOtp(newOtp.join(''));
-        if (pastedData.length === 6) {
-            inputRefs.current[5].focus();
         }
     };
 
@@ -78,7 +74,7 @@ const OTPVerification = () => {
         try {
             const response = await axios.post(`${USER_API_END_POINT}/verify-otp`, { otp, token, email });
             dispatch(setUser(response.data.user));
-            navigate("/");
+            navigate("/forgot-password", { state: { email } }); // Redirect to Reset Password with email
         } catch (error) {
             setErrorMessage('Invalid OTP');
         } finally {
@@ -94,7 +90,7 @@ const OTPVerification = () => {
                         OTP Verification
                     </h1>
                     <p className="text-gray-600">
-                        {success ? 'Enter the code sent to your email' : 'Enter your email to receive the OTP'}
+                        {success ? `Enter the OTP sent to ${email}` : 'Enter your email to receive the OTP'}
                     </p>
                 </div>
 
@@ -111,7 +107,7 @@ const OTPVerification = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                className="w-full px-4 py-3 border outline-none border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                                 placeholder="example@email.com"
                             />
                         </div>
@@ -136,7 +132,6 @@ const OTPVerification = () => {
                                     value={otp[index] || ''}
                                     onChange={(e) => handleOtpChange(index, e.target.value)}
                                     onKeyDown={(e) => handleKeyDown(index, e)}
-                                    onPaste={handlePaste}
                                     ref={(el) => (inputRefs.current[index] = el)}
                                     className="w-12 h-16 border-2 border-gray-200 rounded-xl text-center text-2xl font-semibold focus:border-purple-600 focus:outline-none"
                                 />

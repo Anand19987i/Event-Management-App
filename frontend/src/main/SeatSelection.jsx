@@ -2,135 +2,168 @@ import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { EVENT_API_END_POINT } from '@/utils/constant';
-import Navbar from '@/components/Navbar';
-
+import { EVENT_API_END_POINT } from '../utils/constant';
+import Navbar from '../components/Navbar';
 
 const SeatSelection = () => {
-    const { eventDetail } = useSelector(store => store.event);
+    const { eventDetail, loading, error } = useSelector(store => store.event);
     const { user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const eventId = eventDetail?._id;
+    const [totalSeats, setTotalSeats] = useState(0);
     const [bookedSeats, setBookedSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [loadingSeats, setLoadingSeats] = useState(true);
     const [errorSeats, setErrorSeats] = useState("");
-
-    const CATEGORY_MAPPING = [
-        { name: "VVIP", range: [1, 10], color: "bg-red-600 border-red-700 text-white", price: 5000 },
-        { name: "VIP", range: [11, 30], color: "bg-orange-500 border-orange-600 text-white", price: 3000 },
-        { name: "Premium", range: [31, 50], color: "bg-green-500 border-green-600 text-white", price: 2000 },
-        { name: "Regular", range: [51, 100], color: "bg-gray-400 border-gray-500 text-white", price: eventDetail?.ticketPrice }
-    ];
+    const MAX_COLUMNS = 20;
 
     useEffect(() => {
         if (!eventId) return;
-        axios.get(`${EVENT_API_END_POINT}/${eventId}`).then(response => {
-            if (response.data.success) {
-                setBookedSeats(response.data.event.bookedSeats);
+
+        const fetchEventDetails = async () => {
+            try {
+                const response = await axios.get(`${EVENT_API_END_POINT}/${eventId}`);
+                if (response.data.success) {
+                    setTotalSeats(response.data.event.totalSeats);
+                    setBookedSeats(response.data.event.bookedSeats);
+                }
+            } catch (error) {
+                setErrorSeats("Failed to load event details");
+            } finally {
+                setLoadingSeats(false);
             }
-        }).catch(() => setErrorSeats("Failed to load event details"))
-          .finally(() => setLoadingSeats(false));
+        };
+        fetchEventDetails();
     }, [eventId]);
 
     const toggleSeatSelection = (seat) => {
         setSelectedSeats(prev => prev.includes(seat) ? prev.filter(s => s !== seat) : [...prev, seat]);
     };
 
-    const getSeatPrice = (seatNumber) => {
-        const category = CATEGORY_MAPPING.find(({ range }) => seatNumber >= range[0] && seatNumber <= range[1]);
-        return category ? category.price : 0;
-    };
-
     const handleConfirmBooking = async () => {
         try {
-            const seatDetails = selectedSeats.map(seat => ({ seatNumber: seat, price: getSeatPrice(seat) }));
-            const totalAmount = seatDetails.reduce((sum, seat) => sum + seat.price, 0);
-            
+            const amount = selectedSeats.length * eventDetail.ticketPrice;
             const { data } = await axios.post(`${EVENT_API_END_POINT}/payment/razorpay`, {
-                eventId, 
-                userId: user?._id, 
-                amount: totalAmount, 
-                selectedSeats: seatDetails
+                eventId,
+                userId: user?._id,
+                amount,
+                selectedSeats,
             });
 
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: data.order.amount,
                 currency: "INR",
-                name: `${eventDetail?.eventTitle} Seat Booking`,
+                name: `${eventDetail?.eventTitle}`,
                 description: "Seat Booking Payment",
                 order_id: data.order.id,
                 handler: async (response) => {
                     await axios.post(`${EVENT_API_END_POINT}/payment/razorpay/callback`, {
-                        ...response, 
-                        userId: user?._id, 
-                        eventId, 
-                        selectedSeats: seatDetails
+                        ...response,
+                        userId: user?._id,
+                        eventId,
+                        selectedSeats,
                     });
                     navigate(`/list/bookings/events/${user?._id}`);
                 },
                 theme: { color: "#3399cc" }
             };
-            const rzp = new window.Razorpay(options);
-            rzp.open();
+
+            if (window.Razorpay) {
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+            } else {
+                console.error("Razorpay SDK is not loaded");
+            }
+
         } catch (error) {
             console.error("Payment Error:", error);
         }
+    };
+
+    if (loadingSeats) return <div className="min-h-[400px] flex-center">Loading...</div>;
+
+    const getSeatCategory = (seatNumber) => {
+        if (seatNumber <= 10) return { category: "VVIP", color: "bg-red-600 border-red-700 text-white" };
+        if (seatNumber <= 20) return { category: "VIP", color: "bg-orange-500 border-orange-600 text-white" };
+        if (seatNumber <= 30) return { category: "Regular", color: "bg-green-500 border-green-600 text-white" };
+        return { category: "General", color: "bg-gray-400 border-gray-500 text-white" };
     };
 
     return (
         <>
             <Navbar />
             <div className="max-w-5xl mx-auto p-4 space-y-8">
-                <header className="text-center">
-                    <h1 className="text-3xl font-bold">Select Your Seats</h1>
+                <header className="text-center space-y-2">
+                    <h1 className="text-3xl font-bold text-gray-900">Select Your Seats</h1>
+                    <p className="text-gray-600">Choose your preferred seats</p>
                 </header>
-                {errorSeats && <div className="bg-red-100 p-4 text-red-700 rounded">{errorSeats}</div>}
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                    {CATEGORY_MAPPING.map(({ name, range, color, price }) => (
-                        <div key={name} className="mb-4">
-                            <h2 className="text-lg font-semibold mb-2">{name} Seats - ₹{price}</h2>
-                            <div className="grid grid-cols-10 gap-2">
-                                {Array.from({ length: range[1] - range[0] + 1 }).map((_, index) => {
-                                    const seatNumber = range[0] + index;
-                                    const isBooked = bookedSeats.includes(seatNumber);
-                                    const isSelected = selectedSeats.includes(seatNumber);
-                                    return (
-                                        <button
-                                            key={seatNumber}
-                                            onClick={() => !isBooked && toggleSeatSelection(seatNumber)}
-                                            disabled={isBooked}
-                                            className={`w-10 h-10 rounded text-sm font-medium border-2 transition-all ${
-                                                isBooked ? "bg-gray-100 border-gray-200 cursor-not-allowed" :
-                                                isSelected ? `scale-90 ${color}` :
-                                                `hover:scale-105 border-blue-200 hover:bg-blue-50 ${color}`
-                                            }`}
-                                        >
-                                            {isSelected ? "✔" : seatNumber}
-                                        </button>
-                                    );
-                                })}
-                            </div>
+
+                {errorSeats && (
+                    <div className="p-4 bg-red-50 text-red-700 rounded-lg flex items-center gap-3">
+                        <span>{errorSeats}</span>
+                    </div>
+                )}
+
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mx-6">
+                    <div className="overflow-x-auto pb-4">
+                        <div className="inline-block mx-auto">
+                            {Array.from({ length: Math.ceil(totalSeats / MAX_COLUMNS) }).map((_, row) => (
+                                <div key={row} className="flex gap-2 mb-2">
+                                    {Array.from({ length: MAX_COLUMNS }).map((_, col) => {
+                                        const seatNumber = row * MAX_COLUMNS + col + 1;
+                                        if (seatNumber > totalSeats) return null;
+
+                                        const isBooked = bookedSeats.includes(seatNumber);
+                                        const isSelected = selectedSeats.includes(seatNumber);
+                                        const { category, color } = getSeatCategory(seatNumber);
+
+                                        return (
+                                            <button
+                                                key={seatNumber}
+                                                onClick={() => !isBooked && toggleSeatSelection(seatNumber)}
+                                                disabled={isBooked}
+                                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-200 border-2 
+                                                    ${isBooked ? "bg-gray-100 border-gray-200 cursor-not-allowed" :
+                                                    isSelected ? `scale-90 ${color}` :
+                                                    `hover:scale-105 border-blue-200 hover:bg-blue-50 ${color}`}
+                                                `}
+                                                title={`${category} Seat`}
+                                            >
+                                                {isSelected ? "✔" : seatNumber}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <p>Selected {selectedSeats.length} seat{selectedSeats.length !== 1 && "s"}</p>
-                    <p className="text-2xl font-bold">₹{selectedSeats.reduce((sum, seat) => sum + getSeatPrice(seat), 0).toLocaleString("en-IN")}</p>
-                    <button
-                        onClick={handleConfirmBooking}
-                        disabled={!selectedSeats.length}
-                        className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-                            selectedSeats.length ? "bg-purple-600 hover:bg-purple-700 text-white hover:shadow-lg" :
-                            "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        }`}
-                    >
-                        Confirm Booking
-                    </button>
+
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div>
+                            <p className="text-gray-600 text-center md:text-left">
+                                Selected {selectedSeats.length} seat{selectedSeats.length !== 1 && "s"}
+                            </p>
+                            <p className="text-2xl font-bold text-gray-900">
+                                ₹{(selectedSeats.length * eventDetail.ticketPrice).toLocaleString("en-IN")}
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleConfirmBooking}
+                            disabled={!selectedSeats.length}
+                            className={`px-8 py-3 rounded-lg font-semibold transition-all
+                                ${selectedSeats.length ? "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg" :
+                                "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+                        >
+                            Confirm Booking
+                        </button>
+                    </div>
                 </div>
             </div>
         </>
     );
 };
+
 export default SeatSelection;

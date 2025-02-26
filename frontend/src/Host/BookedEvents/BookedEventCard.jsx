@@ -6,7 +6,7 @@ const BookedEventCard = ({ event }) => {
   return (
     <div className="font-montserrat">
       {/* Card Container */}
-      <div className="group flex flex-col w-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white cursor-pointer mb-10">
+      <div className="group flex flex-col w-80 lg:w-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white cursor-pointer mb-10">
         {/* Event Thumbnail */}
         <Link to={`/booked/event/details/${event._id}`}>
 

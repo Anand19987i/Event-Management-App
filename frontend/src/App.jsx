@@ -26,6 +26,8 @@ import SearchResults from './components/SearchResults'
 import Dashboard from './main/Dashboard'
 import SeatSelection from './main/SeatSelection'
 import Success from './main/Success'
+import ResetPassword from './auth/ResetPassword'
+import OTPVerification from './auth/OTPVerification'
 
 const App = () => {
   const appRouter = createBrowserRouter([
@@ -48,6 +50,14 @@ const App = () => {
     {
       path: "/signup-as-host",
       element: <HostSignup/>
+    },
+    {
+      path: "/auth/otp/verify",
+      element: <OTPVerification/>
+    },
+    {
+      path: "/forgot-password",
+      element: <ResetPassword/>
     },
     {
       path: "/edit/:name/:id",

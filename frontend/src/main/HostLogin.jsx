@@ -100,6 +100,11 @@ const HostLogin = () => {
               </span>
             </div>
           </div>
+          <div className="flex justify-end mb-4">
+            <Link to="/auth/otp/verify" className="text-sm text-purple-600 hover:underline">
+              Forgot Password?
+            </Link>
+          </div>
           {errorMessage && (
             <p className="text-red-600 p-4 text-center">{errorMessage}</p>
           )}

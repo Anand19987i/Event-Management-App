@@ -17,7 +17,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOption = {
-    // origin: "http://localhost:5173",
     origin: "https://eventify-7ojp.onrender.com",
     credentials: true,
 }

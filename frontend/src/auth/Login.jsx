@@ -79,7 +79,7 @@ const Login = () => {
               className="border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
             />
           </div>
-          <div className="flex flex-col mb-4 relative">
+          <div className="flex flex-col mb-2 relative">
             <label className="mb-2 text-gray-700">
               Password <span className="text-red-600">*</span>
             </label>
@@ -100,6 +100,11 @@ const Login = () => {
                 {React.createElement(icon, { size: 20 })}
               </span>
             </div>
+          </div>
+          <div className="flex justify-end mb-4">
+            <Link to="/auth/otp/verify" className="text-sm text-purple-600 hover:underline">
+              Forgot Password?
+            </Link>
           </div>
           {errorMessage && (
             <p className="text-red-600 p-4 text-center">{errorMessage}</p>

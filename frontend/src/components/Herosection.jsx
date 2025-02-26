@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const HeroSectionUser = () => {
+const Herosection = () => {
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-700 via-purple-900 to-black text-white"
@@ -17,13 +17,10 @@ const HeroSectionUser = () => {
           <Link to="/view/events" className="bg-white text-purple-700 px-8 py-3 rounded-full font-semibold shadow-lg hover:scale-105 hover:bg-purple-100 transition-transform duration-300">
             Explore Events
           </Link>
-          <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-white hover:text-purple-700 transition-transform duration-300">
-            Join an Event
-          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default HeroSectionUser;
+export default Herosection;

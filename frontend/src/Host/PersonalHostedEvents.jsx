@@ -35,7 +35,7 @@ const PersonalHostedEvents = () => {
         <HostNav/>
             <div className='font-montserrat p-6' >
                 <h1 className='text-3xl font-bold p-3'>List of Your Hosted Events</h1>
-                <div className='flex  items-center flex-wrap gap-14 p-5 px-24'>
+                <div className='flex  items-center flex-wrap gap-14 p-5 px-8'>
                     {userEvents?.length <= 0 ? (
                         <p className="text-xl font-medium text-center w-full">No events available</p>
                     ) : (

@@ -94,6 +94,47 @@ export const markAsNotFirstTime = async (req, res) => {
         });
     }
 };
+export const resetPassword = async (req, res) => {
+    try {
+        const { email, password, confirmPassword } = req.body;
+
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+            });
+        }
+
+        // Validate password confirmation
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                message: "Passwords do not match",
+                success: false,
+            });
+        }
+
+        // Update password and mark it modified
+        user.password = password;
+        user.confirmPassword = confirmPassword;
+        user.markModified("password");
+        user.markModified("confirmPassword"); // Ensure Mongoose updates the field
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password has been reset successfully!",
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
+    }
+};
 
 export const login = async (req, res) => {
     try {
