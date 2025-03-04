@@ -32,7 +32,7 @@ const HostNav = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-between w-full px-4 sm:px-10 lg:px-20 h-16 font-montserrat shadow-md bg-white relative">
+    <div className="flex items-center justify-between w-full px-4 sm:px-10 lg:px-20 h-16 font-montserrat shadow-md bg-white relative z-50">
       {/* Logo */}
       <Link to="/host/main" className="text-2xl sm:text-3xl font-bold flex items-center">
         <span className="font-montserrat text-purple-700 tracking-tight">E</span>

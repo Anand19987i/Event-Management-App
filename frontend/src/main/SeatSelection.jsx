@@ -84,9 +84,9 @@ const SeatSelection = () => {
     if (loadingSeats) return <div className="min-h-[400px] flex-center">Loading...</div>;
 
     const getSeatCategory = (seatNumber) => {
-        if (seatNumber <= 10) return { category: "VVIP", color: "bg-red-600 border-red-700 text-white" };
-        if (seatNumber <= 20) return { category: "VIP", color: "bg-orange-500 border-orange-600 text-white" };
-        if (seatNumber <= 30) return { category: "Regular", color: "bg-green-500 border-green-600 text-white" };
+        if (seatNumber <= 10) return { category: "VVIP", color: "bg-gray-400 border-gray-500 text-white" };
+        if (seatNumber <= 20) return { category: "VIP", color: "bg-gray-400 border-gray-500 text-white" };
+        if (seatNumber <= 30) return { category: "Regular", color: "bg-gray-400 border-gray-500 text-white" };
         return { category: "General", color: "bg-gray-400 border-gray-500 text-white" };
     };
 

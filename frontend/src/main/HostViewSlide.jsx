@@ -30,7 +30,7 @@ const HostViewSlide = () => {
     };
 
     return (
-        <div className='flex flex-col w-full font-montserrat shadow-lg border bg-white relative'>
+        <div className='flex flex-col w-full font-montserrat shadow-lg border bg-white relative z-100'>
             <div className='flex justify-between border-b items-center p-4'>
                 <span className='text-2xl font-semibold'>Hey!</span>
                 <img src={userDetail?.avatar || "/default-pic.avif"} alt="User Avatar" className='w-14 h-14 rounded-full' />
