@@ -68,7 +68,7 @@ const SeatSelection = () => {
                 },
                 theme: { color: "#3399cc" }
             };
-
+            console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
             if (window.Razorpay) {
                 const rzp = new window.Razorpay(options);
                 rzp.open();
