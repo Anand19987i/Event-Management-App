@@ -2,7 +2,6 @@ import cloudinary from '../config/cloudinary.js';
 import getDataUri from '../config/datauri.js';
 import { Event } from '../models/event.model.js';
 import mongoose from 'mongoose';
-import axios from "axios";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { User } from '../models/user.model.js';
@@ -15,7 +14,7 @@ import fs from "fs";
 import nodemailer from "nodemailer";
 import qr from "qr-image";
 import moment from "moment";
-dotenv.config();
+dotenv.config({});
 
 export const createEvent = async (req, res) => {
   try {
@@ -514,131 +513,7 @@ export const seatSelection = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 }
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
-
-
-export const initiateRazorpayPayment = async (req, res) => {
-  try {
-    const { eventId, userId, amount, selectedSeats } = req.body;
-
-    if (!eventId || !userId || !amount || !selectedSeats || selectedSeats.length === 0) {
-      return res.status(400).json({ success: false, message: "Invalid request parameters" });
-    }
-
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ success: false, message: "Event not found" });
-    }
-
-    const options = {
-      amount: amount * 100, // Convert to paisa
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-      payment_capture: 1,
-    };
-
-    const order = await razorpay.orders.create(options);
-    res.json({ success: true, order });
-  } catch (error) {
-    console.error("Payment Error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-export const razorpayCallback = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, userId, eventId, selectedSeats } = req.body;
-
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !userId || !eventId || !selectedSeats) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
-    }
-
-    // Verify Razorpay Signature
-    const generatedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-
-    if (generatedSignature !== razorpay_signature) {
-      return res.status(400).json({ success: false, message: "Invalid signature" });
-    }
-
-    // Payment is successful, proceed with booking
-    const event = await Event.findById(eventId).populate('hostId').session(session);
-    if (!event) {
-      return res.status(404).json({ success: false, message: "Event not found" });
-    }
-
-    if (event.booked.includes(userId)) {
-      return res.status(400).json({ success: false, message: "You have already booked this event." });
-    }
-
-    // Check if selected seats are available
-    const bookedSeatsSet = new Set(event.bookedSeats);
-    if (selectedSeats.some(seat => bookedSeatsSet.has(seat))) {
-      return res.status(400).json({ success: false, message: "Some seats are already booked!" });
-    }
-
-    // Update event booking details
-    event.booked.push({
-      userId,
-      seats: selectedSeats,
-    });
-    event.bookedSeats.push(...selectedSeats);
-    event.totalRevenue += selectedSeats.length * event.ticketPrice;
-
-    await event.save({ session });
-
-    // Update user booked events
-    const user = await User.findById(userId).session(session);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-    user.bookedEvents.push(eventId);
-    await user.save({ session });
-
-    // Update host details
-    const host = event.hostId;
-    if (!host) {
-      return res.status(404).json({ message: "Host not found." });
-    }
-
-    host.allTimeRevenue += Number(event.ticketPrice) * selectedSeats.length;
-    host.allTimeTicketSold += selectedSeats.length;
-    await host.save({ session });
-
-    // Commit transaction
-    await session.commitTransaction();
-    session.endSession();
-
-    // Generate Receipt PDF
-    const receiptPath = await generateReceiptPDF(user, event, selectedSeats, razorpay_payment_id);
-
-    // Send Receipt Email
-    await sendReceiptToUser(user.email, receiptPath);
-
-    // Respond with success message
-    res.json({ success: true, message: "Payment successful, seats booked. Receipt sent to email." });
-
-  } catch (error) {
-    // Rollback the transaction if any error occurs
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-      session.endSession();
-    }
-
-    console.error("Callback Error:", error.message);
-    res.status(500).json({ success: false, message: "Server error. Please try again." });
-  }
-};
+ 
 
 const generateReceiptPDF = (user, event, selectedSeats, paymentId) => {
   return new Promise((resolve, reject) => {

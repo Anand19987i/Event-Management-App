@@ -81,7 +81,9 @@ const SeatSelection = () => {
         }
     };
 
-    if (loadingSeats) return <div className="min-h-[400px] flex-center">Loading...</div>;
+    if (loadingSeats) return <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
+    </div>
 
     const getSeatCategory = (seatNumber) => {
         if (seatNumber <= 10) return { category: "VVIP", color: "bg-gray-400 border-gray-500 text-white" };
@@ -125,8 +127,8 @@ const SeatSelection = () => {
                                                 disabled={isBooked}
                                                 className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-200 border-2 
                                                     ${isBooked ? "bg-gray-100 border-gray-200 cursor-not-allowed" :
-                                                    isSelected ? `scale-90 ${color}` :
-                                                    `hover:scale-105 border-blue-200 hover:bg-blue-50 ${color}`}
+                                                        isSelected ? `scale-90 ${color}` :
+                                                            `hover:scale-105 border-blue-200 hover:bg-blue-50 ${color}`}
                                                 `}
                                                 title={`${category} Seat`}
                                             >
@@ -155,7 +157,7 @@ const SeatSelection = () => {
                             disabled={!selectedSeats.length}
                             className={`px-8 py-3 rounded-lg font-semibold transition-all
                                 ${selectedSeats.length ? "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg" :
-                                "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+                                    "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
                         >
                             Confirm Booking
                         </button>
