@@ -23,8 +23,8 @@ router.route("/related/events/:eventType").get(getRelatedEvents);
 router.route("/search/query/:query").get(searchEvents);
 router.route("/dashboard/:hostId").get(dashboard);
 router.route("/seat-selection/:eventId").post(seatSelection);
-router.post("/payment/razorpay", initiateRazorpayPayment);
-router.post("/payment/razorpay/callback", razorpayCallback);
+router.route("/payment/razorpay").post(initiateRazorpayPayment);
+router.route("/payment/razorpay/callback").post(razorpayCallback);
 router.post("/cancel-booking/:eventId", cancelBooking);
 
 export default router;

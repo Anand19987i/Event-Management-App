@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { HOST_API_END_POINT } from "@/utils/constant";
-import { setHost, setLoading, setToken, setUser } from "@/redux/authSlice";
+import { setHost, setLoading, setToken } from "@/redux/authSlice";
 
 const HostLogin = () => {
   const [icon, setIcon] = useState(EyeOff);
@@ -29,6 +29,13 @@ const HostLogin = () => {
     setIcon(type === "password" ? EyeIcon : EyeOff);
   };
 
+  const useDemoCredentials = () => {
+    setInput({
+      email: "anandpandey1765@gmail.com",
+      password: "anand",
+    });
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -50,16 +57,14 @@ const HostLogin = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-800"
-    >
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-800">
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl max-w-md w-full">
         <form onSubmit={submitHandler} className="w-full">
           <h1 className="text-3xl font-bold text-start mb-4 text-gray-800">
             Welcome to <span className="text-purple-600">Eventify</span> as a Host!
           </h1>
           <p className="text-sm font-medium mb-6 text-gray-600">
-            Don't have a host account? {" "}
+            Don't have a host account?{" "}
             <span className="underline cursor-pointer text-purple-600">
               <Link to="/signup-as-host">Sign up</Link>
             </span>
@@ -108,6 +113,13 @@ const HostLogin = () => {
           {errorMessage && (
             <p className="text-red-600 p-4 text-center">{errorMessage}</p>
           )}
+          <button
+            type="button"
+            onClick={useDemoCredentials}
+            className="w-full py-3 mb-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 text-center block"
+          >
+            Use Demo Credentials
+          </button>
           {loading ? (
             <button
               type="submit"

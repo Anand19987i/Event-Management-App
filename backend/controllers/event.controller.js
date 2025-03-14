@@ -657,6 +657,108 @@ const sendReceiptToUser = async (email, filePath) => {
   return transporter.sendMail(mailOptions);
 };
 
+export const initiateRazorpayPayment = async (req, res) => {
+  try {
+    const { eventId, userId, amount, selectedSeats } = req.body;
+
+    if (!eventId || !userId || !amount || !selectedSeats.length) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    // Fetch event details
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ success: false, message: "Event not found." });
+
+    // Check seat availability
+    if (selectedSeats.some(seat => event.bookedSeats.includes(seat))) {
+      return res.status(400).json({ success: false, message: "Some seats are already booked!" });
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100, // Razorpay takes amount in paise
+      currency: "INR",
+      receipt: `receipt_${userId}`,
+      payment_capture: 1,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Razorpay order created successfully",
+      order,
+    });
+
+  } catch (error) {
+    console.error("Error initiating Razorpay payment:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const razorpayCallback = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, eventId, userId, selectedSeats } = req.body;
+
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+      throw new Error("Invalid payment details.");
+    }
+
+    // Verify payment signature
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+
+    if (generated_signature !== razorpay_signature) {
+      throw new Error("Payment verification failed!");
+    }
+
+    const event = await Event.findById(eventId).populate("hostId").session(session);
+    if (!event) throw new Error("Event not found.");
+
+    if (selectedSeats.some(seat => event.bookedSeats.includes(seat))) {
+      throw new Error("Some seats are already booked!");
+    }
+
+    // Update event details
+    event.bookedSeats.push(...selectedSeats);
+    event.booked.push({ userId, seats: selectedSeats });
+    event.totalRevenue += selectedSeats.length * event.ticketPrice;
+    await event.save({ session });
+
+    // Update host revenue
+    const host = event.hostId;
+    host.allTimeRevenue += selectedSeats.length * event.ticketPrice;
+    host.allTimeTicketSold += selectedSeats.length;
+    await host.save({ session });
+
+    // Update user's booked events
+    const user = await User.findById(userId).session(session);
+    if (!user) throw new Error("User not found.");
+    user.bookedEvents.push(eventId);
+    await user.save({ session });
+
+    // Generate and send receipt
+    const receiptPath = await generateReceiptPDF(user, event, selectedSeats, razorpay_payment_id);
+    await sendReceiptToUser(user.email, receiptPath);
+
+    await session.commitTransaction();
+    return res.status(200).json({ success: true, message: "Payment successful, ticket booked!" });
+
+  } catch (error) {
+    console.error("Error processing Razorpay payment:", error);
+    await session.abortTransaction();
+    return res.status(500).json({ success: false, message: error.message });
+  } finally {
+    session.endSession();
+  }
+};
 
 export const cancelBooking = async (req, res) => {
   const session = await mongoose.startSession();

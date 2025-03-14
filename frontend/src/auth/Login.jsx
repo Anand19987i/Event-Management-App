@@ -29,6 +29,13 @@ const Login = () => {
     setIcon(type === "password" ? EyeIcon : EyeOff);
   };
 
+  const useDemoCredentials = () => {
+    setInput({
+      email: "anandpandey1765@gmail.com",
+      password: "anand1",
+    });
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -40,7 +47,6 @@ const Login = () => {
       if (response.data.success) {
         dispatch(setUser(response.data.user));
         dispatch(setToken(response.data.token));
-  
         navigate("/");
       }
     } catch (error) {
@@ -51,16 +57,14 @@ const Login = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-800"
-    >
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-800">
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl max-w-md w-full">
         <form onSubmit={submitHandler} className="w-full">
           <h1 className="text-3xl font-bold text-start mb-4 text-gray-800">
-            Welcome to <span className="text-purple-600">Eventify</span> 
+            Welcome to <span className="text-purple-600">Eventify</span>
           </h1>
           <p className="text-sm font-medium mb-6 text-gray-600">
-            Don't have a host account? {" "}
+            Don't have a host account?{" "}
             <span className="underline cursor-pointer text-purple-600">
               <Link to="/signup">Sign up</Link>
             </span>
@@ -109,6 +113,13 @@ const Login = () => {
           {errorMessage && (
             <p className="text-red-600 p-4 text-center">{errorMessage}</p>
           )}
+          <button
+            type="button"
+            onClick={useDemoCredentials}
+            className="w-full py-3 mb-4 bg-gray-200 text-gray-800 font-semibold rounded-lg outline-none hover:bg-gray-300  text-center block"
+          >
+            Use Demo Credentials
+          </button>
           {loading ? (
             <button
               type="submit"

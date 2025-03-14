@@ -29,13 +29,13 @@ const ViewSlide = () => {
     };
 
     return (
-        <div className='flex flex-col w-full font-montserrat shadow-lg border bg-white relative'>
-            <div className='flex justify-between border-b items-center p-4'>
+        <div className='flex flex-col w-full font-montserrat  bg-white relative'>
+            <div className='flex justify-between  items-center p-4'>
                 <span className='text-2xl font-semibold'>Hey!</span>
                 <img src={userDetail?.avatar || "/default-pic.avif"} alt="User Avatar" className='w-14 h-14 rounded-full' />
             </div>
             <Link to={`/edit/${user?.name}/${user?._id}`}>
-                <div className='border-b gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
+                <div className='border-b border-t gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
                     <div className="flex justify-start items-center gap-3 ">
                         <Pen className='w-4 h-4' />
                         <span className='text-lg'>Edit Profile</span>
@@ -67,7 +67,7 @@ const ViewSlide = () => {
                 </div>
             </div>
             </Link>
-            <div className='border-b flex items-center justify-start gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
+            <div className=' flex items-center justify-start gap-3 px-4 py-6 cursor-pointer hover:bg-gray-100'>
                 <LogOut className='w-4 h-4' />
                 <span className='text-lg text-red-500' onClick={Logout}>Sign Out</span>
             </div>
